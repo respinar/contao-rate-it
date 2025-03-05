@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Hofff\Contao\RateIt\Rating\Comments;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Model;
 use function class_exists;
 
@@ -28,7 +28,7 @@ final class CommentsConfigurationLoader
     /** @var array */
     private $supportedSources;
 
-    public function __construct(ContaoFrameworkInterface $framework, array $supportedSources)
+    public function __construct(ContaoFramework $framework, array $supportedSources)
     {
         $this->framework        = $framework;
         $this->supportedSources = $supportedSources;
