@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Hofff\Contao\RateIt\EventListener\Hook;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Template;
 use Doctrine\DBAL\Connection;
 use Hofff\Contao\RateIt\Rating\Comments\CommentsConfigurationLoader;
@@ -41,7 +41,7 @@ final class RateItCommentsListener extends RatingListener
     public function __construct(
         RatingService $ratingService,
         TokenStorageInterface $tokenStorage,
-        ContaoFrameworkInterface $framework,
+        ContaoFramework $framework,
         CommentsConfigurationLoader $configurationLoader,
         CommentsTitleGenerator $titleGenerator,
         Connection $connection
