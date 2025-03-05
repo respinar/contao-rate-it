@@ -18,7 +18,7 @@ namespace Hofff\Contao\RateIt\Rating\Comments;
 
 use Contao\Controller;
 use Contao\CoreBundle\Framework\Adapter;
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use PDO;
@@ -32,7 +32,7 @@ final class CommentsTitleGenerator
     /** @var ContaoFrameworkInterface */
     private $framework;
 
-    public function __construct(Connection $connection, ContaoFrameworkInterface $framework)
+    public function __construct(Connection $connection, ContaoFramework $framework)
     {
         $this->connection = $connection;
         $this->framework  = $framework;
