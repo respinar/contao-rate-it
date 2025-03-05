@@ -17,7 +17,7 @@
 namespace Hofff\Contao\RateIt\Controller;
 
 use Contao\Config;
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\FrontendUser;
 use Doctrine\DBAL\Connection;
 use Hofff\Contao\RateIt\Rating\CurrentUserId;
@@ -64,7 +64,7 @@ class AjaxRateItController
         Connection $connection,
         TokenStorageInterface $tokenStorage,
         TranslatorInterface $translator,
-        ContaoFrameworkInterface $framework,
+        ContaoFramework $framework,
         RatingService $ratingService,
         IsUserAllowedToRate $isUserAllowedToRate,
         array $ratingTypes
