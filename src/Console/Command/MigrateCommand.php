@@ -22,6 +22,7 @@ use Doctrine\DBAL\ForwardCompatibility\Result as ForwardCompatibilityResult;
 use Doctrine\DBAL\Result;
 use Hofff\Contao\RateIt\Rating\RatingTypes;
 use PDO;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,11 +30,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function time;
 
+#[AsCommand(
+    name: 'hofff-rate-it:migrate',
+    description: 'Executes migrations and updates the database schema.',
+)]
 final class MigrateCommand extends Command
 {
-    /** @var string */
-    protected static $defaultName = 'hofff-rate-it:migrate';
-
     /** @var Connection */
     private $connection;
 
