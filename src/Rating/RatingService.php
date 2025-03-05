@@ -19,7 +19,7 @@ declare(strict_types=1);
 namespace Hofff\Contao\RateIt\Rating;
 
 use Contao\Config;
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use PDO;
@@ -55,7 +55,7 @@ SQL;
 
     public function __construct(
         Connection $connection,
-        ContaoFrameworkInterface $framework,
+        ContaoFramework $framework,
         IsUserAllowedToRate $isUserAllowedToRate
     )  {
         $this->connection          = $connection;
