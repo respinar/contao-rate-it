@@ -22,9 +22,8 @@ use Hofff\Contao\RateIt\Frontend\RateItTopRatingsModule;
 /*
  * Back end modules
  */
-array_insert(
-    $GLOBALS['BE_MOD']['content'],
-    -1,
+$GLOBALS['BE_MOD']['content'] = array_merge(
+    array_slice($GLOBALS['BE_MOD']['content'], 0, -1, true),
     [
         'rateit' => [
             'callback'   => RateItBackendModule::class,
@@ -32,7 +31,8 @@ array_insert(
             'stylesheet' => RateItBackend::css('backend'),
             'javascript' => RateItBackend::js('RateItBackend'),
         ],
-    ]
+    ],
+    array_slice($GLOBALS['BE_MOD']['content'], -1, null, true)
 );
 
 /*
