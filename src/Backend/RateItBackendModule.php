@@ -18,6 +18,7 @@ namespace Hofff\Contao\RateIt\Backend;
 
 use Contao\BackendModule;
 use Contao\Config;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Input;
 use Contao\System;
 use Hofff\Contao\RateIt\Rating\RatingTypes;
@@ -51,11 +52,25 @@ class RateItBackendModule extends BackendModule
     protected $labels;
 
     /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * @var ContaoFramework
+     */
+    private $framework;
+
+    /**
      * Initialize the controller
      */
     public function __construct($objElement = array())
     {
         parent::__construct($objElement);
+
+        // Fetch ContaoFramework and Config manually
+        $framework = System::getContainer()->get('contao.framework');
+        $this->config = $framework->getAdapter(Config::class);
 
         $this->label  = $GLOBALS['TL_LANG']['rateit']['star'];
         $this->labels = $GLOBALS['TL_LANG']['rateit']['stars'];
@@ -100,7 +115,8 @@ class RateItBackendModule extends BackendModule
             }
         }
 
-        $stars = (int) Config::get('rating_count');
+        // Use injected config instead of static call
+        $stars = (int) $this->config->get('rating_count');
         if ($stars > 0) {
             $this->intStars = $stars;
         }
@@ -118,7 +134,7 @@ class RateItBackendModule extends BackendModule
         if ($compiler == 'hide') return;
 
         // load other helpers
-        $this->tl_root          = str_replace("\\", '/', TL_ROOT) . '/';
+        $this->tl_root          = System::getContainer()->getParameter('kernel.project_dir') . '/';
         $this->tl_files         = str_replace("\\", '/', Config::get('uploadPath')) . '/';
         $this->Template->rateit = $this->rateit;
 
@@ -163,7 +179,7 @@ class RateItBackendModule extends BackendModule
                 )
             );
         } else {
-            $stg = $this->Session->get('rateit_settings');
+            $stg = $this->Session ? $this->Session->get('rateit_settings') : null;
             if (is_array($stg)) {
                 $rateit->f_typ          = trim($stg['rateit_typ']);
                 $rateit->f_active       = trim($stg['rateit_active']);
