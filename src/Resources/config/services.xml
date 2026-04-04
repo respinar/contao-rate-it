@@ -6,6 +6,12 @@
     <services>
         <defaults public="false" autoconfigure="false" autowire="false" />
 
+        
+        <service id="Hofff\Contao\RateIt\Backend\RateItBackendModule" public="true">
+            <argument type="service" id="contao.framework" />
+            <tag name="contao.backend_module" />
+        </service>       
+
         <!-- Controllers -->
         <service id="Hofff\Contao\RateIt\Controller\AjaxRateItController" public="true">
             <argument type="service" id="database_connection" />
