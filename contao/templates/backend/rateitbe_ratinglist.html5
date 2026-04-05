@@ -44,7 +44,7 @@ $order_options = &$GLOBALS['TL_LANG']['tl_rateit_order_options'];
 <form action="" id="rateit_editform" method="post">
 <div class="tl_formbody">
 <input type="hidden" name="rateit_action" value="<?php echo $rateit->f_action; ?>">
-<input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
+<input type="hidden" name="REQUEST_TOKEN" value="<?php echo \Contao\System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(); ?>">
 
 <div class="tl_panel">
 
@@ -79,7 +79,7 @@ $order_options = &$GLOBALS['TL_LANG']['tl_rateit_order_options'];
 <div class="tl_panel">
 
 <div class="tl_submit_panel tl_subpanel">
-<input type="image" name="filter" id="filter" src="<?php echo TL_FILES_URL; ?>system/themes/<?php echo $this->getTheme(); ?>/icons/filter-apply.svg" class="tl_img_submit" title="<?php echo $text['apply']; ?>" alt="<?php echo $text['apply']; ?>">
+<input type="image" name="filter" id="filter" src="system/themes/<?php echo \Contao\Backend::getTheme(); ?>/icons/filter-apply.svg" class="tl_img_submit" title="<?php echo $text['apply']; ?>" alt="<?php echo $text['apply']; ?>">
 </div>
 
 <div class="tl_limit tl_subpanel">
@@ -120,7 +120,7 @@ $order_options = &$GLOBALS['TL_LANG']['tl_rateit_order_options'];
 <div class="rating_container">
 <form action="<?php echo $rateit->f_link; ?>" id="rateit_clearform" method="post" >
     <input type="hidden" name="act" value="reset_ratings">
-    <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
+    <input type="hidden" name="REQUEST_TOKEN" value="<?php echo \Contao\System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(); ?>">
 <?php if (count($rateit->ratingitems) < 1): ?>
 
 <p><?php echo $text['noratingsfound']; ?></p>
@@ -144,7 +144,7 @@ $order_options = &$GLOBALS['TL_LANG']['tl_rateit_order_options'];
 </tr>
 <tr class="info">
   <th><?php echo $text['createdat'][0]; ?></th>
-  <td><?php echo $this->parseDate(\Contao\Config::get('dateFormat'), $rating->createdat); ?></td>
+  <td><?php echo \Contao\Date::parse(\Contao\Config::get('dateFormat'), $rating->createdat); ?></td>
   <th><?php echo $text['status'][0]; ?></th>
   <td class="active-<?php echo $rating->active; ?>"><?php echo $active_options[$rating->active]; ?></td>
 </tr>
