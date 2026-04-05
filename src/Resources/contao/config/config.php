@@ -41,11 +41,6 @@ $GLOBALS['BE_MOD']['content'] = array_merge(
 $GLOBALS['FE_MOD']['application']['rateit_top_ratings'] = RateItTopRatingsModule::class;
 
 /*
- * Hooks
- */
-$GLOBALS['TL_HOOK']['initializeSystem'][] = [FrontendIntegrationListener::class, 'onInitialize'];
-
-/*
  * Default configuration
  */
 $GLOBALS['TL_CONFIG']['rating_count']        = 5;
