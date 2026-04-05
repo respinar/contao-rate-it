@@ -65,12 +65,12 @@ SQL;
 
     public function getRating(string $type, int $ratingTypeId, ?int $userId) : ?array
     {
-        return $this->getRatingWithMessageTemplate($type, $ratingTypeId, $GLOBALS['TL_CONFIG']['rating_description'], $userId);
+        return $this->getRatingWithMessageTemplate($type, $ratingTypeId, $this->getConfig('rating_description') ?? '', $userId);
     }
 
     public function getRatingWithSuccessMessage(string $type, int $ratingTypeId, ?int $userId) : ?array
     {
-        return $this->getRatingWithMessageTemplate($type, $ratingTypeId, $GLOBALS['TL_CONFIG']['rating_success'] ?: $GLOBALS['TL_CONFIG']['rating_description'], $userId);
+        return $this->getRatingWithMessageTemplate($type, $ratingTypeId, ($this->getConfig('rating_success') ?? '') ?: ($this->getConfig('rating_description') ?? ''), $userId);
     }
 
     private function getRatingWithMessageTemplate(string $type, int $ratingTypeId, string $template, ?int $userId) : ?array
