@@ -73,7 +73,7 @@
     },
     "contao": {
       "runonce": [
-        "src/Resources/contao/runonce/create-initial-data.php"
+        "contao/runonce/create-initial-data.php"
       ]
     },
     "contao-manager-plugin": "Hofff\\Contao\\RateIt\\ContaoManager\\Plugin"

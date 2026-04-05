@@ -40,7 +40,7 @@ final class Plugin implements BundlePluginInterface, RoutingPluginInterface
     /**
      * {@inheritdoc}
      */
-    public function getBundles(ParserInterface $parser) : array
+    public function getBundles(ParserInterface $parser): array
     {
         return [
             BundleConfig::create(HofffContaoRateItBundle::class)
@@ -55,7 +55,7 @@ final class Plugin implements BundlePluginInterface, RoutingPluginInterface
     public function getRouteCollection(LoaderResolverInterface $resolver, KernelInterface $kernel): ?RouteCollection
     {
         return $resolver
-            ->resolve(__DIR__ . '/../Resources/config/routing.xml')
-            ->load(__DIR__ . '/../Resources/config/routing.xml');
+            ->resolve(__DIR__ . '/../../config/routing.yaml')
+            ->load(__DIR__ . '/../../config/routing.yaml');
     }
 }

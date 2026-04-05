@@ -53,7 +53,7 @@ If you use Contao just as a Symfony bundle (not a managed edition), don't forget
 ```
 # routes.yaml
 HofffContaoRateItBundle:
-    resource: '@HofffContaoRateItBundle/Resources/config/routing.xml'
+    resource: '@HofffContaoRateItBundle/config/routing.xml'
 ```
 
 ## How to
