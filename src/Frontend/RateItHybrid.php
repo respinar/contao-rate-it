@@ -17,8 +17,9 @@
 namespace Hofff\Contao\RateIt\Frontend;
 
 use Contao\BackendTemplate;
-use Contao\FrontendTemplate;
+use Contao\Config;
 use Contao\FrontendUser;
+use Contao\System;
 use Hofff\Contao\RateIt\Rating\RatingService;
 
 /**
@@ -44,28 +45,55 @@ abstract class RateItHybrid extends RateItFrontend
      */
     public function generate()
     {
-        if (TL_MODE === 'BE') {
+        $container = System::getContainer();
+        $request = $container->get('request_stack')->getCurrentRequest();
+        $scopeMatcher = $container->get('contao.routing.scope_matcher');
+
+        if ($request && $scopeMatcher->isBackendRequest($request)) {
             $objTemplate = new BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### Rate IT ###';
             $objTemplate->title    = $this->rateit_title;
             $objTemplate->id       = $this->id;
             $objTemplate->link     = $this->name;
-            $objTemplate->href     = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
+            $objTemplate->href     = $this->generateBackendUrl();
 
             return $objTemplate->parse();
         }
 
-        $this->strTemplate = $GLOBALS['TL_CONFIG']['rating_template'];
-        $this->strTextPosition = $GLOBALS['TL_CONFIG']['rating_textposition'];
+        $configAdapter = $container->get('contao.framework')->getAdapter(Config::class);
+        $this->strTemplate = $configAdapter->get('rating_template') ?: 'rateit_default';
+        $this->strTextPosition = $configAdapter->get('rating_textposition') ?: 'after';
 
         return parent::generate();
+    }
+
+    private function generateBackendUrl(): string
+    {
+        $container = System::getContainer();
+        $router = $container->get('router');
+
+        if ($this->getType() === 'ce') {
+            return $router->generate('contao_backend', [
+                'do' => 'article',
+                'table' => 'tl_content',
+                'act' => 'edit',
+                'id' => $this->id,
+            ]);
+        }
+
+        return $router->generate('contao_backend', [
+            'do' => 'themes',
+            'table' => 'tl_module',
+            'act' => 'edit',
+            'id' => $this->id,
+        ]);
     }
 
     /**
      * Generate the module/content element
      */
-    protected function compile() : void
+    protected function compile(): void
     {
         $rating = self::getContainer()
             ->get(RatingService::class)
@@ -79,7 +107,7 @@ abstract class RateItHybrid extends RateItFrontend
         parent::compile();
     }
 
-    abstract protected function getType() : string;
+    abstract protected function getType(): string;
 
     private function getUserId(): ?int
     {
