@@ -1,6 +1,6 @@
 {
   "name": "hofff/contao-rate-it",
-  "description": "RateIt extension for the Contao Open Source CMS as contao 4 bundle",
+  "description": "RateIt extension for the Contao Open Source CMS as Contao 5 bundle",
   "license": "LGPL-3.0-or-later",
   "type": "contao-bundle",
   "keywords": [
