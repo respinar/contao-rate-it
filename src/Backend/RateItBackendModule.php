@@ -193,9 +193,8 @@ class RateItBackendModule extends BackendModule
         if ($rateit->f_order == '') $rateit->f_order = 'rating';
         //if (!isset($rateit->f_active)) $rateit->f_active = '-1';
 
-        if (isset($GLOBALS['TL_CONFIG']['rating_listsize']))
-            $perpage = (int)trim($GLOBALS['TL_CONFIG']['rating_listsize']);
-        if (! isset($perpage) || $perpage < 0) $perpage = 10;
+        $perpage = (int) ($this->config->get('rating_listsize') ?? 10);
+        if ($perpage < 0) $perpage = 10;
 
         if ($rateit->f_page >= 0 && $perpage > 0) {
             $options['first'] = (int) $rateit->f_page * $perpage;
@@ -306,9 +305,8 @@ class RateItBackendModule extends BackendModule
 
         $this->rateit->f_link = $this->createUrl(array('act' => 'view', 'rkey' => $rkey, 'typ' => $typ));
 
-        if (isset($GLOBALS['TL_CONFIG']['rating_listsize']))
-            $perpage = (int)trim($GLOBALS['TL_CONFIG']['rating_listsize']);
-        if (! isset($perpage) || $perpage < 0) $perpage = 10;
+        $perpage = (int) ($this->config->get('rating_listsize') ?? 10);
+        if ($perpage < 0) $perpage = 10;
 
         if ($rateit->f_page >= 0 && $perpage > 0) {
             $options['first'] = ((int) $rateit->f_page) * $perpage;
