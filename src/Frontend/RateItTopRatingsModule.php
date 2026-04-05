@@ -25,6 +25,7 @@ use Contao\Input;
 use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 
 /**
  * Class RateItTopRatingsModule
@@ -49,14 +50,23 @@ class RateItTopRatingsModule extends RateItFrontend
      */
     public function generate()
     {
-        if (TL_MODE === 'BE') {
+        $container = System::getContainer();
+        $request = $container->get('request_stack')->getCurrentRequest();
+        $scopeMatcher = $container->get('contao.routing.scope_matcher');
+
+        if ($request && $scopeMatcher->isBackendRequest($request)) {
             $objTemplate = new BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### Rate IT Best/Most Ratings ###';
             $objTemplate->title    = $this->name;
             $objTemplate->id       = $this->id;
             $objTemplate->link     = $this->name;
-            $objTemplate->href     = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
+            $objTemplate->href     = $container->get('router')->generate('contao_backend', [
+                'do' => 'themes',
+                'table' => 'tl_module',
+                'act' => 'edit',
+                'id' => $this->id,
+            ]);
 
             return $objTemplate->parse();
         }
@@ -77,25 +87,24 @@ class RateItTopRatingsModule extends RateItFrontend
 
         $this->Template->setData($this->arrData);
 
-        $this->import("\\Database", "Database");
-        $arrResult = $this->Database->prepare("SELECT i.id AS item_id,
-				i.rkey AS rkey,
-				i.title AS title,
-				i.typ AS typ,
-				i.createdat AS createdat,
-				i.active AS active,
-				IFNULL(AVG(r.rating),0) AS best,
-				COUNT( r.rating ) AS most
-			FROM tl_rateit_items i
-				LEFT OUTER JOIN tl_rateit_ratings r
-					ON (i.id = r.pid)
-			WHERE
-				typ IN ('" . implode("', '", $this->arrTypes) . "')
-			GROUP BY rkey, title, item_id, typ, createdat, active
-			ORDER BY " . $this->rateit_toptype . " DESC")
-            ->limit($this->rateit_count)
-            ->execute()
-            ->fetchAllAssoc();
+        $connection = System::getContainer()->get('database_connection');
+        $sql = "SELECT i.id AS item_id,
+            i.rkey AS rkey,
+            i.title AS title,
+            i.typ AS typ,
+            i.createdat AS createdat,
+            i.active AS active,
+            IFNULL(AVG(r.rating),0) AS best,
+            COUNT( r.rating ) AS most
+        FROM tl_rateit_items i
+            LEFT OUTER JOIN tl_rateit_ratings r
+                ON (i.id = r.pid)
+        WHERE
+            typ IN ('" . implode("', '", $this->arrTypes) . "')
+        GROUP BY rkey, title, item_id, typ, createdat, active
+        ORDER BY " . $this->rateit_toptype . " DESC";
+
+        $arrResult = $connection->fetchAllAssociative($sql . ' LIMIT ' . (int) $this->rateit_count);
 
         $objReturn = array();
         foreach ($arrResult as $result) {
@@ -105,8 +114,9 @@ class RateItTopRatingsModule extends RateItFrontend
 
             // ID ermitteln
             $stars                 = $this->percentToStars($result['best']);
+            $configAdapter = System::getContainer()->get('contao.framework')->getAdapter(Config::class);
             $return->rateItID      = 'rateItRating-' . $result['rkey'] . '-' . $result['typ'] . '-' .
-                $stars . '_' . intval($GLOBALS['TL_CONFIG']['rating_count']);
+                $stars . '_' . intval($configAdapter->get('rating_count'));
             $return->descriptionId = 'rateItRating-' . $result['rkey'] . '-description';
 
             $return->rateit_class = 'rateItRating';
