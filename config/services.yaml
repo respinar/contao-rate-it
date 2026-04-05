@@ -1,0 +1,192 @@
+services:
+    _defaults:
+        public: false
+        autoconfigure: false
+        autowire: false
+
+    Hofff\Contao\RateIt\Backend\RateItBackendModule:
+        public: true
+        arguments:
+            - '@contao.framework'
+        tags:
+            - { name: contao.backend_module }
+
+    Hofff\Contao\RateIt\Controller\AjaxRateItController:
+        public: true
+        arguments:
+            - '@database_connection'
+            - '@security.token_storage'
+            - '@translator'
+            - '@contao.framework'
+            - '@Hofff\Contao\RateIt\Rating\RatingService'
+            - '@Hofff\Contao\RateIt\Rating\IsUserAllowedToRate'
+            - '%hofff.contao_rate_it.types%'
+
+    Hofff\Contao\RateIt\Console\Command\MigrateCommand:
+        public: true
+        arguments:
+            - '@database_connection'
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
+        tags:
+            - { name: console.command }
+
+    Hofff\Contao\RateIt\Rating\RatingService:
+        public: true
+        arguments:
+            - '@database_connection'
+            - '@contao.framework'
+            - '@Hofff\Contao\RateIt\Rating\IsUserAllowedToRate'
+
+    Hofff\Contao\RateIt\Rating\IsUserAllowedToRate:
+        arguments:
+            - '@database_connection'
+            - '@contao.framework'
+
+    Hofff\Contao\RateIt\Rating\Comments\CommentsConfigurationLoader:
+        arguments:
+            - '@contao.framework'
+            - '%hofff.contao_rate_it.comment_sources%'
+
+    Hofff\Contao\RateIt\Rating\Comments\CommentsTitleGenerator:
+        arguments:
+            - '@database_connection'
+            - '@contao.framework'
+
+    Hofff\Contao\RateIt\Rating\RatingTypes:
+        public: true
+        arguments:
+            - '%hofff.contao_rate_it.types%'
+            - !tagged_iterator hoff_contao_rate_it.rating_type
+
+    Hofff\Contao\RateIt\Rating\RatingType\ArticleRatingType:
+        arguments:
+            - '@database_connection'
+        tags:
+            - { name: hoff_contao_rate_it.rating_type }
+
+    Hofff\Contao\RateIt\Rating\RatingType\CeRatingType:
+        arguments:
+            - '@database_connection'
+        tags:
+            - { name: hoff_contao_rate_it.rating_type }
+
+    Hofff\Contao\RateIt\Rating\RatingType\CommentsRatingType:
+        arguments:
+            - '@database_connection'
+            - '@Hofff\Contao\RateIt\Rating\Comments\CommentsConfigurationLoader'
+            - '@Hofff\Contao\RateIt\Rating\Comments\CommentsTitleGenerator'
+        tags:
+            - { name: hoff_contao_rate_it.rating_type }
+
+    Hofff\Contao\RateIt\Rating\RatingType\ModuleRatingType:
+        arguments:
+            - '@database_connection'
+        tags:
+            - { name: hoff_contao_rate_it.rating_type }
+
+    Hofff\Contao\RateIt\Rating\RatingType\NewsRatingType:
+        arguments:
+            - '@database_connection'
+        tags:
+            - { name: hoff_contao_rate_it.rating_type }
+
+    Hofff\Contao\RateIt\Rating\RatingType\PageRatingType:
+        arguments:
+            - '@database_connection'
+        tags:
+            - { name: hoff_contao_rate_it.rating_type }
+
+    # Hook listeners
+    Hofff\Contao\RateIt\EventListener\Hook\RateItNewsListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingService'
+            - '@security.token_storage'
+            - '@contao.framework'
+        tags:
+            - { name: contao.hook, hook: parseArticles }
+
+    Hofff\Contao\RateIt\EventListener\Hook\RateItArticleListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingService'
+            - '@security.token_storage'
+            - '@contao.framework'
+        tags:
+            - { name: contao.hook, hook: parseTemplate }
+
+    Hofff\Contao\RateIt\EventListener\Hook\RateItPageListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingService'
+            - '@security.token_storage'
+            - '@contao.framework'
+        tags:
+            - { name: contao.hook, hook: generatePage }
+
+    Hofff\Contao\RateIt\EventListener\Hook\RateItCommentsListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingService'
+            - '@security.token_storage'
+            - '@contao.framework'
+            - '@Hofff\Contao\RateIt\Rating\Comments\CommentsConfigurationLoader'
+            - '@Hofff\Contao\RateIt\Rating\Comments\CommentsTitleGenerator'
+            - '@database_connection'
+        tags:
+            - { name: contao.hook, hook: parseTemplate }
+
+    Hofff\Contao\RateIt\EventListener\Hook\FrontendIntegrationListener:
+        public: true
+        arguments:
+            - '%hofff.contao_rate_it.types%'
+        tags:
+            - { name: contao.hook, hook: initializeSystem }
+
+    Hofff\Contao\RateIt\EventListener\Hook\PageRatingInsertTagListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingService'
+            - '@security.token_storage'
+            - '@contao.framework'
+        tags:
+            - { name: contao.hook, hook: replaceInsertTags }
+
+    # DCA listeners
+    Hofff\Contao\RateIt\EventListener\Dca\ModuleDcaListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
+
+    Hofff\Contao\RateIt\EventListener\Dca\ArticleDcaListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
+
+    Hofff\Contao\RateIt\EventListener\Dca\PageDcaListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
+
+    Hofff\Contao\RateIt\EventListener\Dca\ContentDcaListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
+
+    Hofff\Contao\RateIt\EventListener\Dca\NewsDcaListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
+
+    Hofff\Contao\RateIt\EventListener\Dca\NewsArchiveDcaListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
+
+    Hofff\Contao\RateIt\EventListener\Dca\SettingsDcaListener:
+        public: true
+
+    Hofff\Contao\RateIt\EventListener\Dca\CommentsDcaListener:
+        public: true
+        arguments:
+            - '@Hofff\Contao\RateIt\Rating\RatingTypes'
