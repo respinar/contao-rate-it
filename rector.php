@@ -10,7 +10,6 @@ use Rector\ValueObject\PhpVersion;
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         __DIR__.'/src',
-        __DIR__.'/contao',
     ]);
 
     $rectorConfig->phpVersion(PhpVersion::PHP_83);
@@ -20,6 +19,5 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::TYPE_DECLARATION,
         SetList::CODE_QUALITY,
         SetList::DEAD_CODE,
-        SymfonySetList::SYMFONY_64,
     ]);
 };
