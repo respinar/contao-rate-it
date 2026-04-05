@@ -16,9 +16,11 @@
 
 namespace Hofff\Contao\RateIt\Frontend;
 
+use Contao\Config;
 use Contao\Hybrid;
 use Contao\Model;
 use Contao\Model\Collection;
+use Contao\System;
 
 /**
  * Class RateItFrontend
@@ -65,7 +67,8 @@ class RateItFrontend extends Hybrid
             $this->strKey = $this->strPk;
         }
 
-        $stars = intval($GLOBALS['TL_CONFIG']['rating_count']);
+        $configAdapter = System::getContainer()->get('contao.framework')->getAdapter(Config::class);
+        $stars = (int) $configAdapter->get('rating_count');
         if ($stars > 0) {
             $this->intStars = $stars;
         }
@@ -79,34 +82,27 @@ class RateItFrontend extends Hybrid
     public function generate()
     {
         return parent::generate();
-        $this->loadLanguageFile('default');
-        $stars         = intval($GLOBALS['TL_CONFIG']['rating_count']);
-        if ($stars > 0) {
-            $this->intStars = $stars;
-        }
-        $this->strTemplate     = $GLOBALS['TL_CONFIG']['rating_template'];
-        $this->strTextPosition = $GLOBALS['TL_CONFIG']['rating_textposition'];
     }
 
 
     /**
      * Generate the module/content element
      */
-    protected function compile()
-    {
-    }
+    protected function compile(): void {}
 
     public function getStarMessage($rating)
     {
+        $configAdapter = System::getContainer()->get('contao.framework')->getAdapter(Config::class);
+
         $this->loadLanguageFile('default');
         $stars = $this->percentToStars($rating['rating']);
-        preg_match('/^.*\[(.+)\|(.+)\].*$/i', $GLOBALS['TL_CONFIG']['rating_description'], $labels);
+        preg_match('/^.*\[(.+)\|(.+)\].*$/i', $configAdapter->get('rating_description'), $labels);
         if (! is_array($labels) && (! count($labels) == 2 || ! count($labels) == 3)) {
             $label       = ($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating ? $GLOBALS['TL_LANG']['rateit']['rating_label'][1] : $GLOBALS['TL_LANG']['rateit']['rating_label'][0];
             $description = '%current%/%max% %type% (%count% [' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][0] . '|' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][1] . '])';
         } else {
-            $label       = count($labels) == 2 ? $labels[1] : ($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating ? $labels[2] : $labels[1];
-            $description = $GLOBALS['TL_CONFIG']['rating_description'];
+            $label       = count($labels) == 2 ? $labels[1] : ((($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating) ? $labels[2] : $labels[1]);
+            $description = $configAdapter->get('rating_description');
         }
         $actValue = $rating === false ? 0 : $rating['totalRatings'];
         $type     = $GLOBALS['TL_LANG']['rateit']['stars'];
@@ -121,17 +117,19 @@ class RateItFrontend extends Hybrid
 
     public function loadRating($rkey, $typ)
     {
-        $SQL_GET_RATINGS = "SELECT i.rkey AS rkey,
-			i.title AS title,
-			IFNULL(AVG(r.rating),0) AS rating,
-			COUNT( r.rating ) AS totalRatings
-			FROM tl_rateit_items i
-			LEFT OUTER JOIN tl_rateit_ratings r
-			ON ( i.id = r.pid ) WHERE i.rkey = ? and typ=? and active='1'
-			GROUP BY i.rkey, i.title;";
-        $result          = $this->Database->prepare($SQL_GET_RATINGS)
-            ->execute($rkey, $typ)
-            ->fetchAssoc();
+        $sql = "SELECT i.rkey AS rkey,
+            i.title AS title,
+            IFNULL(AVG(r.rating),0) AS rating,
+            COUNT( r.rating ) AS totalRatings
+        FROM tl_rateit_items i
+        LEFT OUTER JOIN tl_rateit_ratings r
+            ON ( i.id = r.pid )
+        WHERE i.rkey = ? and typ=? and active='1'
+        GROUP BY i.rkey, i.title";
+
+        $result = System::getContainer()->get('database_connection')
+            ->fetchAssociative($sql, [$rkey, $typ]);
+
         return $result;
     }
 
