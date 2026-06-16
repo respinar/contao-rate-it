@@ -18,14 +18,11 @@ namespace Hofff\Contao\RateIt\Rating;
 
 final class SourceInformation
 {
-    /** @var string */
-    private $title;
+    private string $title;
 
-    /** @var bool */
-    private $active;
+    private bool $active;
 
-    /** @var string */
-    private $parentStatus;
+    private string $parentStatus;
 
     public function __construct(string $title, bool $active, string $parentStatus)
     {
