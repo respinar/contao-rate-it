@@ -9,6 +9,7 @@ return ECSConfig::configure()
     ->withSets([SetList::CONTAO])
     // Adjust the configuration according to your needs.
     ->withPaths([
-        __DIR__.'/',
+        __DIR__.'/contao',
+        __DIR__.'/src',
     ])
 ;
