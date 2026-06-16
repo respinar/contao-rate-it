@@ -26,7 +26,7 @@ use PDO;
 
 final class RatingService
 {
-    private const SQL_QUERY = <<<'SQL'
+    private const string SQL_QUERY = <<<'SQL'
 
 SELECT
     i.id AS id,
@@ -44,8 +44,7 @@ WHERE
 GROUP BY i.rkey, i.id, i.title;
 SQL;
 
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
     /** @var ContaoFrameworkInterface */
     private $framework;
@@ -101,7 +100,7 @@ SQL;
         ];
     }
 
-    private function loadRating($rkey, $typ) : ?array
+    private function loadRating(int $rkey, string $typ) : ?array
     {
         $statement = $this->connection->prepare(self::SQL_QUERY);
         $statement->bindValue('rkey', $rkey);
@@ -167,7 +166,7 @@ SQL;
         $description = str_replace('%count%', (string) $actValue, $description);
 
         if ($label !== '') {
-            $description = preg_replace(
+            return preg_replace(
                 '/^(.*)(\[.*\])(.*)$/i',
                 "\\1$label\\3",
                 $description
