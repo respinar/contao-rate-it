@@ -64,14 +64,16 @@ abstract class BaseRatingType implements RatingType
 
     protected function loadRecord(int $sourceId): ?array
     {
-        $statement = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE id=? LIMIT 0,1', $this->tableName()));
-        $result    = $statement->executeQuery([$sourceId]);
+        $record = $this->connection->createQueryBuilder()
+            ->select('*')
+            ->from($this->tableName())
+            ->where('id = :id')
+            ->setParameter('id', $sourceId)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
 
-        if ($result->rowCount() === 0) {
-            return null;
-        }
-
-        return $result->fetchAssociative();
+        return $record ?: null;
     }
 
     abstract protected function tableName() : string;
