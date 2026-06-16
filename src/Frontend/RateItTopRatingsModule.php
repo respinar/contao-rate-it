@@ -32,7 +32,7 @@ use Contao\System;
  */
 class RateItTopRatingsModule extends RateItFrontend
 {
-    private static $arrUrlCache = array();
+    private static array $arrUrlCache = array();
 
     /**
      * Initialize the controller
@@ -81,7 +81,7 @@ class RateItTopRatingsModule extends RateItFrontend
     /**
      * Generate the module/content element
      */
-    protected function compile()
+    protected function compile(): void
     {
         $this->Template = new FrontendTemplate($this->strTemplate);
 
@@ -138,7 +138,7 @@ class RateItTopRatingsModule extends RateItFrontend
         $this->Template->arrRatings = $objReturn;
     }
 
-    private function getUrl($rating)
+    private function getUrl(array $rating)
     {
         if ($rating['typ'] === 'page') {
             return PageModel::findById($rating['rkey'])->getAbsoluteUrl();
@@ -159,7 +159,7 @@ class RateItTopRatingsModule extends RateItFrontend
             }
 
             // Encode e-mail addresses
-            if (substr($objArticle->url, 0, 7) == 'mailto:') {
+            if (substr($objArticle->url, 0, 7) === 'mailto:') {
                 $strArticleUrl = StringUtil::encodeEmail($objArticle->url);
             } // Ampersand URIs
             else {
@@ -190,7 +190,7 @@ class RateItTopRatingsModule extends RateItFrontend
         switch ($objItem->source) {
             // Link to an external page
             case 'external' :
-                if (substr($objItem->url, 0, 7) == 'mailto:') {
+                if (substr($objItem->url, 0, 7) === 'mailto:') {
                     self::$arrUrlCache[$strCacheKey] = StringUtil::encodeEmail($objItem->url);
                 } else {
                     self::$arrUrlCache[$strCacheKey] = ampersand($objItem->url);
