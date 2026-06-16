@@ -26,8 +26,7 @@ use function is_array;
 
 final class CommentsTitleGenerator
 {
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
     /** @var ContaoFrameworkInterface */
     private $framework;
@@ -72,7 +71,7 @@ final class CommentsTitleGenerator
                 $statement = $this->connection
                     ->prepare('SELECT * FROM tl_comments WHERE source=? AND parent=? LIMIT 0,1');
 
-                $result = $statement->executeQuery([$source, $sourceId]);
+                $result = $statement->executeQuery();
 
                 if ($result->rowCount() === 0) {
                     return $title;
@@ -126,7 +125,7 @@ final class CommentsTitleGenerator
         }
 
         $statement = $this->connection->prepare('SELECT ptable,pid FROM tl_content WHERE id=:id LIMIT 0,1');
-        $result    = $statement->executeQuery(['id' => $sourceId]);
+        $result    = $statement->executeQuery();
 
         if ($result->rowCount() === 0) {
             return;
