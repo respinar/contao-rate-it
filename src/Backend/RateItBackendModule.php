@@ -27,7 +27,7 @@ use function is_array;
 class RateItBackendModule extends BackendModule
 {
     protected $strTemplate;
-    protected $actions = array();
+    protected $actions = [];
 
     protected $rateit;
 
@@ -75,12 +75,12 @@ class RateItBackendModule extends BackendModule
         $this->label  = $GLOBALS['TL_LANG']['rateit']['star'];
         $this->labels = $GLOBALS['TL_LANG']['rateit']['stars'];
 
-        $this->actions = array(
+        $this->actions = [
             //	  act[0]			strTemplate					compiler
-            array('', 'rateitbe_ratinglist', 'listRatings'),
-            array('reset_ratings', '', 'resetRatings'),
-            array('view', 'rateitbe_ratingview', 'viewRating'),
-        );
+            ['', 'rateitbe_ratinglist', 'listRatings'],
+            ['reset_ratings', '', 'resetRatings'],
+            ['view', 'rateitbe_ratingview', 'viewRating']
+        ];
 
         $this->loadLanguageFile('rateit_backend');
         $this->arrExportHeader        = &$GLOBALS['TL_LANG']['tl_rateit']['xls_headers'];
@@ -93,7 +93,7 @@ class RateItBackendModule extends BackendModule
      * - Select the template and compiler in the front end
      * @return string
      */
-    public function generate()
+    public function generate(): string
     {
         $this->rateit     = new \stdClass();
         $rateit           = &$this->rateit;
@@ -104,7 +104,9 @@ class RateItBackendModule extends BackendModule
         $this->compiler    = $this->actions[0][2];
 
         $act = Input::get('act');
-        if (! $act) $act = Input::post('act');
+        if (! $act) {
+            $act = Input::post('act');
+        }
         foreach ($this->actions as $action) {
             if ($act == $action[0]) {
                 $this->parameter   = $act;
@@ -154,10 +156,12 @@ class RateItBackendModule extends BackendModule
     /**
      * List the ratings
      */
-    protected function listRatings()
+    protected function listRatings(): void
     {
         $rateit         = &$this->Template->rateit;
         $rateit->f_page = 0;
+        $options        = [];
+        $types          = [];
 
         // returning from submit?
         if ($this->filterPost('rateit_action') == $rateit->f_action) {
@@ -170,13 +174,13 @@ class RateItBackendModule extends BackendModule
             $rateit->f_find         = trim(Input::post('rateit_find'));
             $this->Session->set(
                 'rateit_settings',
-                array(
+                [
                     'rateit_typ'          => $rateit->f_typ,
                     'rateit_parentstatus' => $rateit->f_parentstatus,
                     'rateit_order'        => $rateit->f_order,
                     'rateit_page'         => $rateit->f_page,
                     'rateit_find'         => $rateit->f_find,
-                )
+                ]
             );
         } else {
             $stg = $this->Session ? $this->Session->get('rateit_settings') : null;
@@ -190,7 +194,9 @@ class RateItBackendModule extends BackendModule
             } // if
         } // if
 
-        if ($rateit->f_order == '') $rateit->f_order = 'rating';
+        if ($rateit->f_order == '') {
+            $rateit->f_order = 'rating';
+        }
         //if (!isset($rateit->f_active)) $rateit->f_active = '-1';
 
         $perpage = (int) ($this->config->get('rating_listsize') ?? 10);
@@ -200,10 +206,18 @@ class RateItBackendModule extends BackendModule
             $options['first'] = (int) $rateit->f_page * $perpage;
             $options['limit'] = $perpage;
         } // if
-        if ($rateit->f_typ != '') $options['typ'] = $rateit->f_typ;
-        if ($rateit->f_active != '') $options['active'] = $rateit->f_active == '0' ? '' : $rateit->f_active;
-        if ($rateit->f_parentstatus != '') $options['parentstatus'] = $rateit->f_parentstatus;
-        if ($rateit->f_find != '') $options['find'] = $rateit->f_find;
+        if ($rateit->f_typ != '') {
+            $options['typ'] = $rateit->f_typ;
+        }
+        if ($rateit->f_active != '') {
+            $options['active'] = $rateit->f_active == '0' ? '' : $rateit->f_active;
+        }
+        if ($rateit->f_parentstatus != '') {
+            $options['parentstatus'] = $rateit->f_parentstatus;
+        }
+        if ($rateit->f_find != '') {
+            $options['find'] = $rateit->f_find;
+        }
 
         switch ($rateit->f_order) {
             case 'title'     :
@@ -653,9 +667,9 @@ class RateItBackendModule extends BackendModule
 
         $this->loadLanguageFile('default');
 
-        $arr         = array();
-        $arr['cols'] = array();
-        $arr['rows'] = array();
+        $arr         = [];
+        $arr['cols'] = [];
+        $arr['rows'] = [];
 
         // Spalten anlegen
         $arr['cols'][] = array('id' => 'month', 'label' => $GLOBALS['TL_LANG']['tl_rateit']['month_chart_legend'][3], 'type' => 'string');
