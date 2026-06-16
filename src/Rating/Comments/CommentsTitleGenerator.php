@@ -44,42 +44,42 @@ final class CommentsTitleGenerator
         $title = $this->generateDefaultTitle($author, $source, $sourceId);
         $this->determineSource($source, $sourceId);
 
+
         switch ($source) {
             case 'tl_page':
-                $statement = $this->connection->prepare('SELECT title FROM tl_page WHERE id=? LIMIT 0,1');
-
+                $query = 'SELECT title FROM tl_page WHERE id = ? LIMIT 1';
                 break;
 
             case 'tl_news':
-                $statement = $this->connection->prepare('SELECT headline FROM tl_news WHERE id=?');
-
+                $query = 'SELECT headline FROM tl_news WHERE id = ?';
                 break;
 
             case 'tl_faq':
-                $statement = $this->connection->prepare('SELECT question FROM tl_faq WHERE id=?');
-
+                $query = 'SELECT question FROM tl_faq WHERE id = ?';
                 break;
 
             case 'tl_calendar_events':
-                $statement = $this->connection->prepare('SELECT title FROM tl_calendar_events WHERE id=?');
-
+                $query = 'SELECT title FROM tl_calendar_events WHERE id = ?';
                 break;
 
             default:
                 // HOOK: support custom modules
-                if (! isset($GLOBALS['TL_HOOKS']['listComments']) || ! is_array($GLOBALS['TL_HOOKS']['listComments'])) {
+
+                if (!isset($GLOBALS['TL_HOOKS']['listComments']) || !is_array($GLOBALS['TL_HOOKS']['listComments'])) {
                     return $title;
                 }
 
                 $statement = $this->connection
-                    ->prepare('SELECT * FROM tl_comments WHERE source=? AND parent=? LIMIT  0,1');
+                    ->prepare('SELECT * FROM tl_comments WHERE source=? AND parent=? LIMIT 0,1');
 
                 $result = $statement->executeQuery([$source, $sourceId]);
+
                 if ($result->rowCount() === 0) {
                     return $title;
                 }
 
                 $row = $result->fetchAssociative();
+
                 foreach ($GLOBALS['TL_HOOKS']['listComments'] as $callback) {
                     $callback[0] = System::importStatic($callback[0]);
 
@@ -92,9 +92,10 @@ final class CommentsTitleGenerator
                 return $title;
         }
 
-        $result = $statement->executeQuery([$sourceId]);
-        if ($result->rowCount() === 1) {
-            $title .= ' - ' . $result->fetchOne();
+        $value = $this->connection->fetchOne($query, [$sourceId]);
+
+        if ($value !== false) {
+            $title .= ' - ' . $value;
         }
 
         return $title;
