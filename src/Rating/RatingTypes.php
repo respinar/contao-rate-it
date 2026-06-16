@@ -24,10 +24,10 @@ use function in_array;
 final class RatingTypes
 {
     /** @var RatingType[] */
-    private $ratingTypes = [];
+    private array $ratingTypes = [];
 
     /** @var string[] */
-    private $activeTypesNames;
+    private array $activeTypesNames;
 
     /**
      * @param RatingType[] $ratingTypes
