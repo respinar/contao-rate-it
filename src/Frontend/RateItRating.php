@@ -31,18 +31,9 @@ class RateItRating extends RateItFrontend
     public $ratingType = 'page';
 
     /**
-     * Initialize the controller
-     */
-    public function __construct($objElement = array())
-    {
-        parent::__construct($objElement);
-    }
-
-    /**
      * Display a wildcard in the back end
-     * @return string
      */
-    public function generate()
+    public function generate(): void
     {
         parent::generate();
     }
@@ -50,7 +41,7 @@ class RateItRating extends RateItFrontend
     /**
      * Compile
      */
-    protected function compile()
+    protected function compile(): void
     {
         $this->loadLanguageFile('default');
 
