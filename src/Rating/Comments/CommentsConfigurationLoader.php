@@ -25,8 +25,7 @@ final class CommentsConfigurationLoader
     /** @var ContaoFrameworkInterface */
     private $framework;
 
-    /** @var array */
-    private $supportedSources;
+    private array $supportedSources;
 
     public function __construct(ContaoFramework $framework, array $supportedSources)
     {
