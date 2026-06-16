@@ -23,8 +23,7 @@ use PDO;
 
 abstract class BaseRatingType implements RatingType
 {
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
     public function __construct(Connection $connection)
     {

@@ -25,8 +25,7 @@ use PDO;
 
 final class IsUserAllowedToRate
 {
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
     /** @var ContaoFrameworkInterface */
     private $framework;
