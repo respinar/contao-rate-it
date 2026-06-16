@@ -128,30 +128,52 @@ SQL;
     }
 
     // TODO: Rework
-    private function getStarMessage(string $template, ?array $rating) : string
+    private function getStarMessage(string $template, ?array $rating): string
     {
         $this->framework->initialize();
         $this->framework->getAdapter(System::class)->loadLanguageFile('default');
 
         $stars = $this->percentToStars($rating['rating']);
-        preg_match('/^.*\[(.+)\|(.+)\].*$/i', $template, $labels);
-        if (! is_array($labels) && (! count($labels) == 2 || ! count($labels) == 3)) {
-            $label       = ($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating ? $GLOBALS['TL_LANG']['rateit']['rating_label'][1] : $GLOBALS['TL_LANG']['rateit']['rating_label'][0];
-            $description = '%current%/%max% %type% (%count% [' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][0] . '|' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][1] . '])';
+
+        $labels = [];
+
+        if (preg_match('/^.*\[(.+)\|(.+)\].*$/i', $template, $labels)) {
+            $label = ($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0)
+                ? $labels[2]
+                : $labels[1];
+
+            $description = $template;
         } else {
-            $label       = count($labels) == 2
-                ? $labels[1]
-                : (($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0 || ! $rating) ? $labels[2] : $labels[1]);
+            $label = '';
             $description = $template;
         }
-        $actValue = $rating === false ? 0 : $rating['totalRatings'];
-        $type     = $GLOBALS['TL_LANG']['rateit']['stars'];
-// 		return str_replace('.', ',', $stars)."/$this->intStars ".$type." ($actValue $label)";
-        $description = str_replace('%current%', str_replace('.', ',', (string) $stars), $description);
-        $description = str_replace('%max%', (string) $this->maxStars(), $description);
+
+        $actValue = $rating['totalRatings'];
+        $type = $GLOBALS['TL_LANG']['rateit']['stars'];
+
+        $description = str_replace(
+            '%current%',
+            str_replace('.', ',', (string) $stars),
+            $description
+        );
+
+        $description = str_replace(
+            '%max%',
+            (string) $this->maxStars(),
+            $description
+        );
+
         $description = str_replace('%type%', $type, $description);
         $description = str_replace('%count%', (string) $actValue, $description);
-        $description = preg_replace('/^(.*)(\[.*\])(.*)$/i', "\\1$label\\3", $description);
+
+        if ($label !== '') {
+            $description = preg_replace(
+                '/^(.*)(\[.*\])(.*)$/i',
+                "\\1$label\\3",
+                $description
+            );
+        }
+
         return $description;
     }
 
