@@ -67,7 +67,7 @@ final class Configuration implements ConfigurationInterface
                     ->beforeNormalization()
                         ->always()
                         ->then(
-                            static function ($value) {
+                            static function ($value): array {
                                 if (!is_array($value)) {
                                     return ['tl_news' => 'tl_news_archive'];
                                 }
