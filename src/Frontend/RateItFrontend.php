@@ -90,7 +90,7 @@ class RateItFrontend extends Hybrid
      */
     protected function compile(): void {}
 
-    public function getStarMessage($rating)
+    public function getStarMessage(array $rating): string|array|null
     {
         $configAdapter = System::getContainer()->get('contao.framework')->getAdapter(Config::class);
 
@@ -101,7 +101,7 @@ class RateItFrontend extends Hybrid
             $label       = ($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating ? $GLOBALS['TL_LANG']['rateit']['rating_label'][1] : $GLOBALS['TL_LANG']['rateit']['rating_label'][0];
             $description = '%current%/%max% %type% (%count% [' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][0] . '|' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][1] . '])';
         } else {
-            $label       = count($labels) == 2 ? $labels[1] : ((($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating) ? $labels[2] : $labels[1]);
+            $label       = count($labels) === 2 ? $labels[1] : ((($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating) ? $labels[2] : $labels[1]);
             $description = $configAdapter->get('rating_description');
         }
         $actValue = $rating === false ? 0 : $rating['totalRatings'];
@@ -111,8 +111,7 @@ class RateItFrontend extends Hybrid
         $description = str_replace('%max%', $this->intStars, $description);
         $description = str_replace('%type%', $type, $description);
         $description = str_replace('%count%', $actValue, $description);
-        $description = preg_replace('/^(.*)(\[.*\])(.*)$/i', "\\1$label\\3", $description);
-        return $description;
+        return preg_replace('/^(.*)(\[.*\])(.*)$/i', "\\1$label\\3", $description);
     }
 
     public function loadRating($rkey, $typ)
@@ -127,13 +126,11 @@ class RateItFrontend extends Hybrid
         WHERE i.rkey = ? and typ=? and active='1'
         GROUP BY i.rkey, i.title";
 
-        $result = System::getContainer()->get('database_connection')
+        return System::getContainer()->get('database_connection')
             ->fetchAssociative($sql, [$rkey, $typ]);
-
-        return $result;
     }
 
-    protected function percentToStars($percent)
+    protected function percentToStars($percent): float
     {
         $modifier = 100 / $this->intStars;
         return round($percent / $modifier, 1);
