@@ -45,7 +45,7 @@ class RateItArticleListener extends RatingListener
         $template->rating          = $this->getRating('article', (int) $template->id);
     }
 
-    private function doArticleList($objTemplate) : void
+    private function doArticleList(Template $objTemplate) : void
     {
         if (!$objTemplate->rateit_active) {
             return;
