@@ -36,26 +36,16 @@ class AjaxRateItController
     /** @var ContaoFrameworkInterface */
     private $framework;
 
-    /** @var bool */
-    private $allowDuplicates;
+    private Connection $connection;
 
-    /** @var bool */
-    private $allowDuplicatesForMembers;
+    private TokenStorageInterface $tokenStorage;
 
-    /** @var Connection */
-    private $connection;
-
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
-    /** @var TranslatorInterface */
-    private $translator;
+    private TranslatorInterface $translator;
 
     /** @var IsUserAllowedToRate */
     private $isUserAllowedToRate;
 
-    /** @var RatingService */
-    private $ratingService;
+    private RatingService $ratingService;
 
     /** @var string[] */
     private $ratingTypes;
@@ -90,11 +80,7 @@ class AjaxRateItController
         if (! defined('FE_USER_LOGGED_IN')) {
             define('FE_USER_LOGGED_IN', false);
         }
-
-        $configAdapter = $this->framework->getAdapter(Config::class);
-
-        $this->allowDuplicates           = (bool) $configAdapter->get('rating_allow_duplicate_ratings');
-        $this->allowDuplicatesForMembers = (bool) $configAdapter->get('rating_allow_duplicate_ratings_for_members');
+        $this->framework->getAdapter(Config::class);
 
         return $this->doVote($request);
     }
@@ -112,7 +98,7 @@ class AjaxRateItController
      * @param integer id      - The id of key to register a rating for.
      * @param integer percent - The rating in percentages.
      */
-    public function doVote(Request $request)
+    public function doVote(Request $request): JsonResponse
     {
         $rkey     = $request->request->get('id');
         $percent  = $request->request->get('vote');
