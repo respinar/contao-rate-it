@@ -29,14 +29,11 @@ use function time;
 
 final class RateItCommentsListener extends RatingListener
 {
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
-    /** @var CommentsTitleGenerator */
-    private $titleGenerator;
+    private CommentsTitleGenerator $titleGenerator;
 
-    /** @var CommentsConfigurationLoader */
-    private $configurationLoader;
+    private CommentsConfigurationLoader $configurationLoader;
 
     public function __construct(
         RatingService $ratingService,
