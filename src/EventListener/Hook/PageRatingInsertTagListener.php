@@ -18,8 +18,7 @@ namespace Hofff\Contao\RateIt\EventListener\Hook;
 
 final class PageRatingInsertTagListener extends RatingListener
 {
-    /** @return string|false */
-    public function onReplaceInsertTags(string $tag)
+    public function onReplaceInsertTags(string $tag): false|string
     {
         if (strpos($tag, 'rateit_page_rating') !== 0) {
             return false;
