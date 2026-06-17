@@ -25,11 +25,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 abstract class RatingListener
 {
-    /** @var RatingService */
-    protected $ratingService;
+    protected RatingService $ratingService;
 
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
     /** @var ContaoFrameworkInterface */
     private $framework;
