@@ -25,8 +25,7 @@ use Hofff\Contao\RateIt\Rating\RatingTypes;
  */
 abstract class BaseDcaListener
 {
-    /** @var RatingTypes */
-    protected $ratingTypes;
+    protected RatingTypes $ratingTypes;
 
     /** @var string */
     protected static $typeName;
