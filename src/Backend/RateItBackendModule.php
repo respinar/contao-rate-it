@@ -19,6 +19,7 @@ namespace Hofff\Contao\RateIt\Backend;
 use Contao\BackendModule;
 use Contao\Config;
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
 use Hofff\Contao\RateIt\Rating\RatingTypes;
@@ -57,11 +58,6 @@ class RateItBackendModule extends BackendModule
     protected $config;
 
     /**
-     * @var ContaoFramework
-     */
-    private $framework;
-
-    /**
      * Initialize the controller
      */
     public function __construct($objElement = array())
@@ -91,7 +87,6 @@ class RateItBackendModule extends BackendModule
      * Generate module:
      * - Display a wildcard in the back end
      * - Select the template and compiler in the front end
-     * @return string
      */
     public function generate(): string
     {
@@ -235,7 +230,7 @@ class RateItBackendModule extends BackendModule
 
         // query extensions
         $rateit->ratingitems = $this->getRatingItems($options);
-        if ($rateit->f_page >= 0 && $perpage > 0 && count($rateit->ratingitems) == 0) {
+        if ($rateit->f_page >= 0 && $perpage > 0 && count($rateit->ratingitems) === 0) {
             $rateit->f_page      = 0;
             $options['first']    = 0;
             $rateit->ratingitems = $this->getRatingItems($options);
@@ -332,7 +327,7 @@ class RateItBackendModule extends BackendModule
         $ext = &$rateit->ratingitems[0];
 
         $ext->ratings = $this->getRatings($ext, $options);
-        if ($rateit->f_page >= 0 && $perpage > 0 && count($ext->ratings) == 0) {
+        if ($rateit->f_page >= 0 && $perpage > 0 && count($ext->ratings) === 0) {
             $rateit->f_page   = 0;
             $options['first'] = 0;
             $rateit->ratings  = $this->getRatings($ext, $options);
@@ -402,7 +397,7 @@ class RateItBackendModule extends BackendModule
 
     } // resetRatings
 
-    public function updateParentInformation()
+    public function updateParentInformation(): void
     {
         $rateit = &$this->Template->rateit;
 
@@ -452,7 +447,7 @@ class RateItBackendModule extends BackendModule
      * @param array  $aParams Assiciative array with key/value pairs as parameters.
      * @return string The create link.
      */
-    protected function createPageUrl($aPage, $aParams = [])
+    protected function createPageUrl($aPage, array $aParams = [])
     {
         $aParams['do'] = $aPage;
 
@@ -468,14 +463,12 @@ class RateItBackendModule extends BackendModule
      *                        'text': Keep tags p br ul li em
      * @return string The filtered input.
      */
-    protected function filterPost($aKey, $aMode = '')
+    protected function filterPost($aKey, $aMode = ''): string|array|null
     {
         $v = trim(Input::postRaw($aKey));
-        if ($v == '' || $aMode == '') return $v;
+        if ($v === '' || $aMode == '') return $v;
         switch ($aMode) {
             case 'nohtml':
-                $v = strip_tags($v);
-                break;
             case 'text':
                 $v = strip_tags($v);
                 break;
@@ -483,8 +476,10 @@ class RateItBackendModule extends BackendModule
         $v = preg_replace('/<(\w+) .*>/U', '<$1>', $v);
         return $v;
     } // filterPost
-
-    protected function getRatingItems($aOptions, $noLimit = false)
+    /**
+     * @return \stdClass[]
+     */
+    protected function getRatingItems(array $aOptions, $noLimit = false): array
     {
         $sql = "SELECT i.id as item_id,
 				i.rkey AS rkey,
@@ -517,7 +512,7 @@ class RateItBackendModule extends BackendModule
                 }
                 $where      .= " title like '%$v%'";
                 $firstWhere = false;
-            } else if ($k != 'order' && $k != 'limit' && $k != 'first') {
+            } else if (!in_array($k, ['order', 'limit', 'first'])) {
                 if (! $firstWhere) {
                     $where .= " AND";
                 }
@@ -536,7 +531,7 @@ class RateItBackendModule extends BackendModule
             $limit = "LIMIT $first, $cntRows";
         }
 
-        if (strlen($where) > 0) {
+        if ($where !== '') {
             $where = "WHERE " . $where;
         }
 
@@ -563,8 +558,10 @@ class RateItBackendModule extends BackendModule
         }
         return $arrReturn;
     } // getRatingItems
-
-    protected function getRatings($ext, $options = array())
+    /**
+     * @return \stdClass[]
+     */
+    protected function getRatings($ext, $options = array()): array
     {
         // Gesamtanzahl (für Paging wichtig) ermitteln
         $cntSql = "SELECT COUNT(*) FROM tl_rateit_ratings r WHERE r.pid=$ext->item_id";
@@ -611,8 +608,10 @@ class RateItBackendModule extends BackendModule
         }
         return $arrReturn;
     } // getRatings
-
-    protected function getRatingStatistics($item_id)
+    /**
+     * @return \stdClass[]
+     */
+    protected function getRatingStatistics($item_id): array
     {
         $sql = "SELECT rating, count(*) as count
 		FROM tl_rateit_ratings r
@@ -632,7 +631,7 @@ class RateItBackendModule extends BackendModule
         return $arrReturn;
     } // getRatings
 
-    protected function getRatingsChartData($statistics)
+    protected function getRatingsChartData($statistics): string|false
     {
         $arr         = array();
         $arr['cols'] = array();
@@ -649,7 +648,7 @@ class RateItBackendModule extends BackendModule
         return json_encode($arr);
     }
 
-    protected function getMonthsChartData($item_id)
+    protected function getMonthsChartData($item_id): string|false
     {
 
         $sql = "SELECT count(*) AS anzahl, avg(rating) AS bewertung, month(date(FROM_UNIXTIME(createdat))) AS monat, year(date(FROM_UNIXTIME(createdat))) AS jahr
@@ -687,7 +686,7 @@ class RateItBackendModule extends BackendModule
         return json_encode($arr);
     }
 
-    protected function percentToStars($percent)
+    protected function percentToStars($percent): float
     {
         $modifier = 100 / $this->intStars;
         return round($percent / $modifier, 1);
@@ -705,12 +704,12 @@ class RateItBackendModule extends BackendModule
         if (function_exists('mb_strlen')) {
             @mb_substitute_character('none');
             return @mb_convert_encoding($strString, $to, $from);
-        } elseif (function_exists('iconv')) {
+        }
+        if (function_exists('iconv')) {
             if (strlen($iconv = @iconv($from, $to . '//IGNORE', $strString))) {
                 return $iconv;
-            } else {
-                return @iconv($from, $to, $strString);
             }
+            return @iconv($from, $to, $strString);
         }
         return $strString;
     }
