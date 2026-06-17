@@ -36,11 +36,9 @@ use function time;
 )]
 final class MigrateCommand extends Command
 {
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
-    /** @var RatingTypes */
-    private $ratingTypes;
+    private RatingTypes $ratingTypes;
 
     public function __construct(Connection $connection, RatingTypes $ratingTypes)
     {
@@ -75,7 +73,6 @@ final class MigrateCommand extends Command
         switch ($task) {
             case 'article-to-page':
                 return $this->migrateArticlesToPages($input);
-                break;
 
             default:
                 throw new \InvalidArgumentException(sprintf('Task "%s" is not supported.', $task));
@@ -85,7 +82,6 @@ final class MigrateCommand extends Command
     private function migrateArticlesToPages(InputInterface $input) : int
     {
         $unratedPagesWithArticleRatings = $this->getUnratedPagesWithArticleRatings();
-        $createdRatings = [];
 
         while ($row = $unratedPagesWithArticleRatings->fetchAssociative()) {
             $this->createRateItItem($row['pageId'], $input->getOption('position'));
@@ -96,17 +92,16 @@ final class MigrateCommand extends Command
         return 0;
     }
 
-    /** @return Result|ForwardCompatibilityResult */
-    private function getUnratedPagesWithArticleRatings()
+    private function getUnratedPagesWithArticleRatings(): Result
     {
         $sql = <<<'SQL'
-SELECT 
+SELECT
        p.`id` AS 'pageId'
 FROM `tl_page` p
 INNER JOIN `tl_article` a               ON a.`pid` = p.`id`
 LEFT JOIN `tl_rateit_items` ri_page     ON p.`id` = ri_page.`rkey`    AND ri_page.`typ` = 'page'
 INNER JOIN `tl_rateit_items` ri_article ON a.`id` = ri_article.`rkey` AND ri_article.`typ` = 'article'
-WHERE 
+WHERE
     ri_page.`id` IS NULL
     AND ri_article.`id` IS NOT NULL
 GROUP BY p.id
