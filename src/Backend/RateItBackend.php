@@ -28,7 +28,7 @@ class RateItBackend
      * @param string $file The basename if the file (without extension).
      * @return string The file path.
      */
-    public static function css($file)
+    public static function css($file): string
     {
         return self::path . 'css/' . $file . '.css';
     } // file
@@ -38,7 +38,7 @@ class RateItBackend
      * @param string $file The basename if the file (without extension).
      * @return string The file path.
      */
-    public static function js($file)
+    public static function js($file): string
     {
         return self::path . 'js/' . $file . '.js';
     } // file
@@ -48,7 +48,7 @@ class RateItBackend
      * @param string $file The basename if the image (without extension).
      * @return string The image path.
      */
-    public static function image($file)
+    public static function image($file): string
     {
         $webDirectory = System::getContainer()->getParameter('contao.web_dir');
         $url = self::path . 'images/';
@@ -66,12 +66,12 @@ class RateItBackend
      * @param string $attributes Additional tag attributes.
      * @return string The html code.
      */
-    public static function createImage($file, $alt = '', $attributes = '')
+    public static function createImage($file, $alt = '', $attributes = ''): string
     {
         if ($alt == '') $alt = 'icon';
         $img  = self::image($file);
         $size = getimagesize($img);
-        return '<img' . ((substr($img, -4) == '.png') ? ' class="pngfix"' : '') . ' src="' . $img . '" ' . $size[3] . ' alt="' . StringUtil::specialchars($alt) . '"' . (($attributes != '') ? ' ' . $attributes : '') . '>';
+        return '<img' . ((substr($img, -4) === '.png') ? ' class="pngfix"' : '') . ' src="' . $img . '" ' . $size[3] . ' alt="' . StringUtil::specialchars($alt) . '"' . (($attributes != '') ? ' ' . $attributes : '') . '>';
     } // createImage
 
     /**
@@ -83,14 +83,14 @@ class RateItBackend
      * @param boolean $popup   Open the target in a new window.
      * @return string The html code.
      */
-    public function createListButton($file, $link, $text, $confirm = '', $popup = false)
+    public function createListButton($file, $link, $text, $confirm = '', $popup = false): string
     {
         $target  = $popup ? ' target="_blank"' : '';
         $onclick = ($confirm != '') ? ' onclick="if(!confirm(\'' . $confirm . '\'))return false"' : '';
         return '<a href="' . $link . '" title="' . $text . '"' . $target . $onclick . '>' . $this->createImage($file, $text) . '</a>';
     } // createListButton
 
-    public function createMainButton($file, $link, $text, $confirm = '')
+    public function createMainButton($file, $link, $text, $confirm = ''): string
     {
         $onclick = ($confirm == '')
             ? ''
