@@ -38,7 +38,7 @@ class RateItPageListener extends RatingListener
         $rating = $template->parse();
 
         if ($objPage->rateit_position == 'after') {
-            $pageTemplate->main = $pageTemplate->main . $rating;
+            $pageTemplate->main .= $rating;
         } else {
             $pageTemplate->main = $rating . $pageTemplate->main;
         }
