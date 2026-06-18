@@ -31,25 +31,19 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['rateit_top_ratings'] = '{title_lege
  * fields
  */
 $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_title'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_module']['rateit_title'],
     'default'   => '',
-    'exclude'   => true,
     'inputType' => 'text',
     'sql'       => "varchar(255) NOT NULL default ''",
     'eval'      => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_active'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_module']['rateit_active'],
-    'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",
     'eval'      => ['tl_class' => 'w50 m12'],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_types'] = [
-    'label'            => &$GLOBALS['TL_LANG']['tl_module']['rateit_types'],
-    'exclude'          => true,
     'inputType'        => 'checkboxWizard',
     'options_callback' => [ModuleDcaListener::class, 'typeOptions'],
     'eval'             => ['multiple' => true, 'mandatory' => true],
@@ -58,8 +52,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_types'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_toptype'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_module']['rateit_toptype'],
-    'exclude'   => true,
     'default'   => 'best',
     'inputType' => 'select',
     'options'   => ['best', 'most'],
@@ -69,21 +61,16 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_toptype'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_count'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_module']['rateit_count'],
     'default'   => '10',
-    'exclude'   => true,
     'inputType' => 'text',
     'eval'      => ['mandatory' => true, 'maxlength' => 3, 'rgxp' => 'digit', 'tl_class' => 'w50'],
     'sql'       => "varchar(3) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['rateit_template'] = [
-    'label'            => &$GLOBALS['TL_LANG']['tl_module']['rateit_template'],
     'default'          => 'mod_rateit_top_ratings',
-    'exclude'          => true,
     'inputType'        => 'select',
     'options_callback' => [ModuleDcaListener::class, 'getRateItTopModuleTemplates'],
     'eval'             => ['mandatory' => true, 'tl_class' => 'w50'],
     'sql'              => "varchar(255) NOT NULL default ''",
 ];
-

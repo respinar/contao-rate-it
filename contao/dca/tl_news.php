@@ -37,17 +37,13 @@ $GLOBALS['TL_DCA']['tl_news']['subpalettes']['addRating'] = 'rateit_position';
 
 // Fields
 $GLOBALS['TL_DCA']['tl_news']['fields']['addRating'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_news']['addRating'],
-    'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",
     'eval'      => ['tl_class' => 'w50 m12', 'submitOnChange' => true],
 ];
 
 $GLOBALS['TL_DCA']['tl_news']['fields']['rateit_position'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_news']['rateit_position'],
     'default'   => 'before',
-    'exclude'   => true,
     'inputType' => 'select',
     'options'   => ['after', 'before'],
     'reference' => &$GLOBALS['TL_LANG']['tl_news'],

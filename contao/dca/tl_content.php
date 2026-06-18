@@ -33,17 +33,13 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['rateit']  = '{type_legend},type,ra
  * fields
  */
 $GLOBALS['TL_DCA']['tl_content']['fields']['rateit_title'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_content']['rateit_title'],
     'default'   => '',
-    'exclude'   => true,
     'inputType' => 'text',
     'sql'       => "varchar(255) NOT NULL default ''",
     'eval'      => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'clr'],
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['rateit_active'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_content']['rateit_active'],
-    'exclude'   => true,
     'inputType' => 'checkbox',
     'sql'       => "char(1) NOT NULL default ''",
     'eval'      => ['tl_class' => 'w50'],
