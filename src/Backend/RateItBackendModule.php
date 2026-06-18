@@ -436,7 +436,7 @@ class RateItBackendModule extends BackendModule
      * @param array $aParams Assiciative array with key/value pairs as parameters.
      * @return string The create link.
      */
-    protected function createUrl($aParams = [])
+    protected function createUrl(array $aParams = [])
     {
         return $this->createPageUrl(Input::get('do'), $aParams);
     } // createUrl
