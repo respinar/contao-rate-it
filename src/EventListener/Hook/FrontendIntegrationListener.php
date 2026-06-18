@@ -22,7 +22,7 @@ use Hofff\Contao\RateIt\Frontend\RateItModule;
 class FrontendIntegrationListener
 {
     /** @var string[] */
-    private $activeItems;
+    private array $activeItems;
 
     /** @param string[] $activeItems */
     public function __construct(array $activeItems)
