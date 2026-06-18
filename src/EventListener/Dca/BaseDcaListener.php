@@ -19,6 +19,7 @@ namespace Hofff\Contao\RateIt\EventListener\Dca;
 use Contao\Database;
 use Contao\DataContainer;
 use Hofff\Contao\RateIt\Rating\RatingTypes;
+use Hofff\Contao\RateIt\Rating\SourceInformation;
 
 /**
  * Class DcaHelper
@@ -79,7 +80,7 @@ abstract class BaseDcaListener
         $database     = Database::getInstance();
         $information  = $this->ratingTypes->sourceInformation(static::$typeName, $sourceId);
 
-        if (!$information) {
+        if (!$information instanceof SourceInformation) {
             return;
         }
 
@@ -119,7 +120,7 @@ abstract class BaseDcaListener
     public function updateRatingKey(int $sourceId) : void
     {
         $information  = $this->ratingTypes->sourceInformation(static::$typeName, $sourceId);
-        if (!$information) {
+        if (!$information instanceof SourceInformation) {
             return;
         }
 
@@ -141,7 +142,7 @@ abstract class BaseDcaListener
     public function restore(int $statusId)
     {
         $information = $this->ratingTypes->sourceInformation(static::$typeName, $statusId);
-        if (!$information) {
+        if (!$information instanceof SourceInformation) {
             return;
         }
 
