@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use function in_array;
 
@@ -48,7 +49,7 @@ class AjaxRateItController
     private RatingService $ratingService;
 
     /** @var string[] */
-    private $ratingTypes;
+    private array $ratingTypes;
 
     public function __construct(
         Connection $connection,
@@ -191,7 +192,7 @@ class AjaxRateItController
     private function determineUserId() : ?int
     {
         $token = $this->tokenStorage->getToken();
-        if (! $token) {
+        if (!$token instanceof TokenInterface) {
             return null;
         }
 
