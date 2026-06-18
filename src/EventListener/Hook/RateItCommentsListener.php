@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Hofff\Contao\RateIt\EventListener\Hook;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\Model;
 use Contao\Template;
 use Doctrine\DBAL\Connection;
 use Hofff\Contao\RateIt\Rating\Comments\CommentsConfigurationLoader;
@@ -62,7 +63,7 @@ final class RateItCommentsListener extends RatingListener
         }
 
         $configuration = $this->configurationLoader->load($template->source, $template->parent);
-        if (! $configuration || ! $configuration->addCommentsRating) {
+        if (! $configuration instanceof Model || ! $configuration->addCommentsRating) {
             return;
         }
 
