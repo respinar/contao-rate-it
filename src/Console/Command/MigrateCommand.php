@@ -21,6 +21,7 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\ForwardCompatibility\Result as ForwardCompatibilityResult;
 use Doctrine\DBAL\Result;
 use Hofff\Contao\RateIt\Rating\RatingTypes;
+use Hofff\Contao\RateIt\Rating\SourceInformation;
 use PDO;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -113,7 +114,7 @@ SQL;
     private function createRateItItem($pageId, string $position) : void
     {
         $sourceInformation = $this->ratingTypes->sourceInformation('page', (int) $pageId);
-        if (!$sourceInformation) {
+        if (!$sourceInformation instanceof SourceInformation) {
             return;
         }
 
