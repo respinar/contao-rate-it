@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Hofff\Contao\RateIt\Rating\RatingType;
 
 use Contao\CommentsModel;
+use Contao\Model;
 use Doctrine\DBAL\Connection;
 use Hofff\Contao\RateIt\Rating\Comments\CommentsConfigurationLoader;
 use Hofff\Contao\RateIt\Rating\Comments\CommentsTitleGenerator;
@@ -46,7 +47,7 @@ final class CommentsRatingType extends BaseRatingType
     public function determineActiveState(array $record) : bool
     {
         $configuration = $this->configurationLoader->load($record['source'], $record['parent']);
-        if (!$configuration) {
+        if (!$configuration instanceof Model) {
             return false;
         }
 
