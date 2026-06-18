@@ -22,6 +22,7 @@ use Contao\FrontendTemplate;
 use Contao\FrontendUser;
 use Hofff\Contao\RateIt\Rating\RatingService;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 abstract class RatingListener
 {
@@ -63,7 +64,7 @@ abstract class RatingListener
     private function getUserId() : ?int
     {
         $token = $this->tokenStorage->getToken();
-        if (!$token) {
+        if (!$token instanceof TokenInterface) {
             return null;
         }
 
