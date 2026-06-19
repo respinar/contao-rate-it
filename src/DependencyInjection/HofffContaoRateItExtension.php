@@ -3,12 +3,12 @@
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
  * @copyright  2019 hofff.com.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -23,18 +23,20 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 final class HofffContaoRateItExtension extends Extension
 {
-    /** @param mixed[][] $configs */
+    /**
+     * @param array<array<mixed>> $configs
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__ . '/../../config')
+            new FileLocator(__DIR__.'/../../config'),
         );
 
         $loader->load('services.yaml');
 
         $config = $this->processConfiguration(new Configuration(), $configs);
-        $types  = array_keys(array_filter($config['types']));
+        $types = array_keys(array_filter($config['types']));
 
         $container->setParameter('hofff.contao_rate_it.types', $types);
         $container->setParameter('hofff.contao_rate_it.comment_sources', $config['comment_sources']);

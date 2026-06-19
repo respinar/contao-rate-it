@@ -15,26 +15,26 @@ final class RemoveInactiveListenersPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        if (! $container->hasParameter('hofff.contao_rate_it.types')) {
+        if (!$container->hasParameter('hofff.contao_rate_it.types')) {
             return;
         }
 
-        $types   = $container->getParameter('hofff.contao_rate_it.types');
+        $types = $container->getParameter('hofff.contao_rate_it.types');
         $bundles = $container->getParameter('kernel.bundles');
 
-        if (! \in_array('page', $types, true)) {
+        if (!\in_array('page', $types, true)) {
             $container->removeDefinition(RateItPageListener::class);
         }
 
-        if (! \in_array('article', $types, true)) {
+        if (!\in_array('article', $types, true)) {
             $container->removeDefinition(RateItArticleListener::class);
         }
 
-        if (! isset($bundles['ContaoNewsBundle']) || ! \in_array('news', $types, true)) {
+        if (!isset($bundles['ContaoNewsBundle']) || !\in_array('news', $types, true)) {
             $container->removeDefinition(RateItNewsListener::class);
         }
 
-        if (! isset($bundles['ContaoCommentsBundle']) || ! \in_array('comments', $types, true)) {
+        if (!isset($bundles['ContaoCommentsBundle']) || !\in_array('comments', $types, true)) {
             $container->removeDefinition(RateItCommentsListener::class);
         }
     }
