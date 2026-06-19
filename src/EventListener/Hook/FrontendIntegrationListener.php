@@ -3,13 +3,13 @@
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
  * @copyright  2019 hofff.com.
  * @copyright  2013-2018 cgo IT.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 declare(strict_types=1);
@@ -21,22 +21,26 @@ use Hofff\Contao\RateIt\Frontend\RateItModule;
 
 class FrontendIntegrationListener
 {
-    /** @var string[] */
+    /**
+     * @var array<string>
+     */
     private array $activeItems;
 
-    /** @param string[] $activeItems */
+    /**
+     * @param array<string> $activeItems
+     */
     public function __construct(array $activeItems)
     {
         $this->activeItems = $activeItems;
     }
 
-    public function onInitializeSystem() : void
+    public function onInitializeSystem(): void
     {
-        if (in_array('ce', $this->activeItems, true)) {
+        if (\in_array('ce', $this->activeItems, true)) {
             $GLOBALS['TL_CTE']['includes']['rateit'] = RateItCE::class;
         }
 
-        if (in_array('module', $this->activeItems, true)) {
+        if (\in_array('module', $this->activeItems, true)) {
             $GLOBALS['FE_MOD']['application']['rateit'] = RateItModule::class;
         }
     }

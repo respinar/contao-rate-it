@@ -3,14 +3,13 @@
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
- * @author     Carsten Götzinger <info@cgo-it.de>
  * @copyright  2019 hofff.com.
  * @copyright  2013-2018 cgo IT.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -24,22 +23,22 @@ final class ContentDcaListener extends BaseDcaListener
 {
     protected static $typeName = 'ce';
 
-    public function onLoad() : void
+    public function onLoad(): void
     {
-        if (! $this->isActive()) {
+        if (!$this->isActive()) {
             return;
         }
 
         $dca = &$GLOBALS['TL_DCA']['tl_content'];
 
-        $dca['config']['onsubmit_callback'][]          = [self::class, 'onSubmit'];
-        $dca['config']['ondelete_callback'][]          = [self::class, 'onDelete'];
+        $dca['config']['onsubmit_callback'][] = [self::class, 'onSubmit'];
+        $dca['config']['ondelete_callback'][] = [self::class, 'onDelete'];
         $dca['config']['onrestore_version_callback'][] = [self::class, 'onRestore'];
     }
 
-    public function onSubmit(DataContainer $dc) : void
+    public function onSubmit(DataContainer $dc): void
     {
-        if ($dc->activeRecord->type !== 'rateit') {
+        if ('rateit' !== $dc->activeRecord->type) {
             return;
         }
 

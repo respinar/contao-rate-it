@@ -3,12 +3,12 @@
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
  * @copyright  2019 hofff.com.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -30,30 +30,29 @@ abstract class RatingListener
 
     private TokenStorageInterface $tokenStorage;
 
-    /** @var ContaoFrameworkInterface */
+    /**
+     * @var ContaoFrameworkInterface
+     */
     private $framework;
 
-    public function __construct(
-        RatingService $ratingService,
-        TokenStorageInterface $tokenStorage,
-        ContaoFramework $framework
-    ) {
+    public function __construct(RatingService $ratingService, TokenStorageInterface $tokenStorage, ContaoFramework $framework,)
+    {
         $this->ratingService = $ratingService;
-        $this->tokenStorage  = $tokenStorage;
-        $this->framework     = $framework;
+        $this->tokenStorage = $tokenStorage;
+        $this->framework = $framework;
     }
 
-    protected function getRating(string $type, int $ratingTypeId) : ?array
+    protected function getRating(string $type, int $ratingTypeId): array|null
     {
         return $this->ratingService->getRating($type, $ratingTypeId, $this->getUserId());
     }
 
-    protected function getRatingTemplate() : string
+    protected function getRatingTemplate(): string
     {
         return $this->framework->getAdapter(Config::class)->get('rating_template') ?: 'ratit_default';
     }
 
-    protected function render(array $data) : string
+    protected function render(array $data): string
     {
         $template = new FrontendTemplate($this->getRatingTemplate());
         $template->setData($data);
@@ -61,7 +60,7 @@ abstract class RatingListener
         return $template->parse();
     }
 
-    private function getUserId() : ?int
+    private function getUserId(): int|null
     {
         $token = $this->tokenStorage->getToken();
         if (!$token instanceof TokenInterface) {

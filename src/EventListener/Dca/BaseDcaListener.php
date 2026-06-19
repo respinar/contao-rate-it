@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
- * @author     Carsten Götzinger <info@cgo-it.de>
  * @copyright  2019 hofff.com.
  * @copyright  2013-2018 cgo IT.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -22,17 +23,19 @@ use Hofff\Contao\RateIt\Rating\RatingTypes;
 use Hofff\Contao\RateIt\Rating\SourceInformation;
 
 /**
- * Class DcaHelper
+ * Class DcaHelper.
  */
 abstract class BaseDcaListener
 {
     protected RatingTypes $ratingTypes;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected static $typeName;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct(RatingTypes $ratingTypes)
     {
@@ -43,29 +46,29 @@ abstract class BaseDcaListener
         }
     }
 
-    protected function isActive() : bool
+    protected function isActive(): bool
     {
         return $this->ratingTypes->has(static::$typeName);
     }
 
-    public function onSubmit(DataContainer $dc) : void
+    public function onSubmit(DataContainer $dc): void
     {
         $this->insertOrUpdateRatingKey((int) $dc->id);
     }
 
-    public function onDelete(DataContainer $dc) : void
+    public function onDelete(DataContainer $dc): void
     {
         $this->markRatingItemAsDeleted((int) $dc->id);
     }
 
-    public function onRestore(string $table, $insertId) : void
+    public function onRestore(string $table, $insertId): void
     {
         $this->restore((int) $insertId);
     }
 
-    public function onUndo(string $table, array $row) : void
+    public function onUndo(string $table, array $row): void
     {
-        if (! $this->isActive()) {
+        if (!$this->isActive()) {
             return;
         }
 
@@ -73,12 +76,13 @@ abstract class BaseDcaListener
     }
 
     /**
-     * Anlegen eines Datensatzes in der Tabelle tl_rateit_items, falls dieser noch nicht exisitiert.
+     * Anlegen eines Datensatzes in der Tabelle tl_rateit_items, falls dieser noch
+     * nicht exisitiert.
      */
     public function insertOrUpdateRatingKey(int $sourceId): void
     {
-        $database     = Database::getInstance();
-        $information  = $this->ratingTypes->sourceInformation(static::$typeName, $sourceId);
+        $database = Database::getInstance();
+        $information = $this->ratingTypes->sourceInformation(static::$typeName, $sourceId);
 
         if (!$information instanceof SourceInformation) {
             return;
@@ -88,45 +92,50 @@ abstract class BaseDcaListener
             $actRecord = $database
                 ->prepare('SELECT * FROM tl_rateit_items WHERE rkey=? and typ=? LIMIT 0,1')
                 ->execute($sourceId, static::$typeName)
-                ->fetchAssoc();
+                ->fetchAssoc()
+            ;
 
-            if (! is_array($actRecord)) {
+            if (!\is_array($actRecord)) {
                 $arrSet = [
-                    'rkey'         => $sourceId,
-                    'tstamp'       => time(),
-                    'typ'          => static::$typeName,
-                    'createdat'    => time(),
-                    'title'        => $information->title(),
-                    'active'       => '1',
+                    'rkey' => $sourceId,
+                    'tstamp' => time(),
+                    'typ' => static::$typeName,
+                    'createdat' => time(),
+                    'title' => $information->title(),
+                    'active' => '1',
                     'parentstatus' => $information->parentStatus(),
                 ];
 
                 $database
                     ->prepare('INSERT INTO tl_rateit_items %s')
                     ->set($arrSet)
-                    ->execute();
+                    ->execute()
+                ;
             } else {
                 $database
                     ->prepare("UPDATE tl_rateit_items SET active='1', title=?, parentstatus=? WHERE rkey=? and typ=?")
-                    ->execute($information->title(), $information->parentStatus(), (string) $sourceId, static::$typeName);
+                    ->execute($information->title(), $information->parentStatus(), (string) $sourceId, static::$typeName)
+                ;
             }
         } else {
             $database
                 ->prepare("UPDATE tl_rateit_items SET active='', parentstatus=? WHERE rkey=? and typ=?")
-                ->execute($information->parentStatus(), (string) $sourceId, static::$typeName);
+                ->execute($information->parentStatus(), (string) $sourceId, static::$typeName)
+            ;
         }
     }
 
-    public function updateRatingKey(int $sourceId) : void
+    public function updateRatingKey(int $sourceId): void
     {
-        $information  = $this->ratingTypes->sourceInformation(static::$typeName, $sourceId);
+        $information = $this->ratingTypes->sourceInformation(static::$typeName, $sourceId);
         if (!$information instanceof SourceInformation) {
             return;
         }
 
         Database::getInstance()
             ->prepare('UPDATE tl_rateit_items SET title=?, parentstatus=? WHERE rkey=? and typ=?')
-            ->execute($information->title(), $information->parentStatus(), (string) $sourceId, static::$typeName);
+            ->execute($information->title(), $information->parentStatus(), (string) $sourceId, static::$typeName)
+        ;
     }
 
     /**
@@ -136,10 +145,11 @@ abstract class BaseDcaListener
     {
         Database::getInstance()
             ->prepare("UPDATE tl_rateit_items SET parentstatus = 'r' WHERE rkey=? and typ=?")
-            ->execute((string) $sourceId, static::$typeName);
+            ->execute((string) $sourceId, static::$typeName)
+        ;
     }
 
-    public function restore(int $statusId)
+    public function restore(int $statusId): void
     {
         $information = $this->ratingTypes->sourceInformation(static::$typeName, $statusId);
         if (!$information instanceof SourceInformation) {
