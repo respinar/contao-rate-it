@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
- * @author     Carsten Götzinger <info@cgo-it.de>
  * @copyright  2019 hofff.com.
  * @copyright  2013-2018 cgo IT.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -28,24 +29,25 @@ use Contao\StringUtil;
 use Contao\System;
 
 /**
- * Class RateItTopRatingsModule
+ * Class RateItTopRatingsModule.
  */
 class RateItTopRatingsModule extends RateItFrontend
 {
-    private static array $arrUrlCache = array();
+    private static array $arrUrlCache = [];
 
     /**
-     * Initialize the controller
+     * Initialize the controller.
      */
     public function __construct($objElement)
     {
         parent::__construct($objElement);
 
-        $this->strKey = "rateit_top_ratings";
+        $this->strKey = 'rateit_top_ratings';
     }
 
     /**
-     * Display a wildcard in the back end
+     * Display a wildcard in the back end.
+     *
      * @return string
      */
     public function generate()
@@ -58,10 +60,10 @@ class RateItTopRatingsModule extends RateItFrontend
             $objTemplate = new BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### Rate IT Best/Most Ratings ###';
-            $objTemplate->title    = $this->name;
-            $objTemplate->id       = $this->id;
-            $objTemplate->link     = $this->name;
-            $objTemplate->href     = $container->get('router')->generate('contao_backend', [
+            $objTemplate->title = $this->name;
+            $objTemplate->id = $this->id;
+            $objTemplate->link = $this->name;
+            $objTemplate->href = $container->get('router')->generate('contao_backend', [
                 'do' => 'themes',
                 'table' => 'tl_module',
                 'act' => 'edit',
@@ -79,7 +81,7 @@ class RateItTopRatingsModule extends RateItFrontend
     }
 
     /**
-     * Generate the module/content element
+     * Generate the module/content element.
      */
     protected function compile(): void
     {
@@ -100,39 +102,40 @@ class RateItTopRatingsModule extends RateItFrontend
             LEFT OUTER JOIN tl_rateit_ratings r
                 ON (i.id = r.pid)
         WHERE
-            typ IN ('" . implode("', '", $this->arrTypes) . "')
+            typ IN ('".implode("', '", $this->arrTypes)."')
         GROUP BY rkey, title, item_id, typ, createdat, active
-        ORDER BY " . $this->rateit_toptype . " DESC";
+        ORDER BY ".$this->rateit_toptype.' DESC';
 
-        $arrResult = $connection->fetchAllAssociative($sql . ' LIMIT ' . (int) $this->rateit_count);
+        $arrResult = $connection->fetchAllAssociative($sql.' LIMIT '.(int) $this->rateit_count);
 
-        $objReturn = array();
+        $objReturn = [];
+
         foreach ($arrResult as $result) {
-            $return        = new \stdClass();
+            $return = new \stdClass();
             $return->title = $result['title'];
-            $return->typ   = $result['typ'];
+            $return->typ = $result['typ'];
 
             // ID ermitteln
-            $stars                 = $this->percentToStars($result['best']);
+            $stars = $this->percentToStars($result['best']);
             $configAdapter = System::getContainer()->get('contao.framework')->getAdapter(Config::class);
-            $return->rateItID      = 'rateItRating-' . $result['rkey'] . '-' . $result['typ'] . '-' .
-                $stars . '_' . intval($configAdapter->get('rating_count'));
-            $return->descriptionId = 'rateItRating-' . $result['rkey'] . '-description';
+            $return->rateItID = 'rateItRating-'.$result['rkey'].'-'.$result['typ'].'-'.
+                $stars.'_'.(int) $configAdapter->get('rating_count');
+            $return->descriptionId = 'rateItRating-'.$result['rkey'].'-description';
 
             $return->rateit_class = 'rateItRating';
 
             $return->url = $this->getUrl($result);
 
             // Beschriftung ermitteln
-            $rating                 = array();
+            $rating = [];
             $rating['totalRatings'] = $result['most'];
-            $rating['rating']       = $result['best'];
-            $return->description    = $this->getStarMessage($rating);
+            $rating['rating'] = $result['best'];
+            $return->description = $this->getStarMessage($rating);
 
             $return->rating = $result['best'];
-            $return->count  = $result['most'];
-            $return->rel    = 'not-rateable';
-            $objReturn[]    = $return;
+            $return->count = $result['most'];
+            $return->rel = 'not-rateable';
+            $objReturn[] = $return;
         }
 
         $this->Template->arrRatings = $objReturn;
@@ -140,26 +143,26 @@ class RateItTopRatingsModule extends RateItFrontend
 
     private function getUrl(array $rating)
     {
-        if ($rating['typ'] === 'page') {
+        if ('page' === $rating['typ']) {
             return PageModel::findById($rating['rkey'])->getAbsoluteUrl();
         }
-        if ($rating['typ'] === 'article') {
+        if ('article' === $rating['typ']) {
             $objArticle = ArticleModel::findPublishedById($rating['rkey']);
-            if (! is_null($objArticle)) {
-                return PageModel::findById($objArticle->pid)->getAbsoluteUrl() . '#' . $objArticle->alias;
+            if (null !== $objArticle) {
+                return PageModel::findById($objArticle->pid)->getAbsoluteUrl().'#'.$objArticle->alias;
             }
         }
-        if ($rating['typ'] === 'news') {
-            $objNews    = NewsModel::findById($rating['rkey']);
+        if ('news' === $rating['typ']) {
+            $objNews = NewsModel::findById($rating['rkey']);
             $objArticle = NewsModel::findPublishedByPid($objNews->pid);
 
             // Internal link
-            if ($objArticle->source != 'external') {
+            if ('external' !== $objArticle->source) {
                 return $this->generateNewsUrl($objNews);
             }
 
             // Encode e-mail addresses
-            if (substr($objArticle->url, 0, 7) === 'mailto:') {
+            if ('mailto:' === substr($objArticle->url, 0, 7)) {
                 $strArticleUrl = StringUtil::encodeEmail($objArticle->url);
             } // Ampersand URIs
             else {
@@ -172,12 +175,13 @@ class RateItTopRatingsModule extends RateItFrontend
             // External link
             return $strArticleUrl;
         }
+
         return false;
     }
 
     private function generateNewsUrl($objItem)
     {
-        $strCacheKey = 'id_' . $objItem->id;
+        $strCacheKey = 'id_'.$objItem->id;
 
         // Load the URL from cache
         if (isset(self::$arrUrlCache[$strCacheKey])) {
@@ -189,8 +193,8 @@ class RateItTopRatingsModule extends RateItFrontend
 
         switch ($objItem->source) {
             // Link to an external page
-            case 'external' :
-                if (substr($objItem->url, 0, 7) === 'mailto:') {
+            case 'external':
+                if ('mailto:' === substr($objItem->url, 0, 7)) {
                     self::$arrUrlCache[$strCacheKey] = StringUtil::encodeEmail($objItem->url);
                 } else {
                     self::$arrUrlCache[$strCacheKey] = ampersand($objItem->url);
@@ -198,7 +202,7 @@ class RateItTopRatingsModule extends RateItFrontend
                 break;
 
             // Link to an internal page
-            case 'internal' :
+            case 'internal':
                 if (($objTarget = $objItem->getRelated('jumpTo')) !== null) {
                     /** @var \PageModel $objTarget */
                     self::$arrUrlCache[$strCacheKey] = ampersand($objTarget->getFrontendUrl());
@@ -206,29 +210,31 @@ class RateItTopRatingsModule extends RateItFrontend
                 break;
 
             // Link to an article
-            case 'article' :
-                if (($objArticle = ArticleModel::findByPk($objItem->articleId, array(
-                        'eager' => true,
-                    ))) !== null && ($objPid = $objArticle->getRelated('pid')) !== null) {
+            case 'article':
+                if (
+                    ($objArticle = ArticleModel::findById($objItem->articleId, [
+                    'eager' => true,
+                ])) !== null && ($objPid = $objArticle->getRelated('pid')) !== null
+                ) {
                     /** @var \PageModel $objPid */
-                    self::$arrUrlCache[$strCacheKey] = ampersand($objPid->getFrontendUrl('/articles/' . ((! Config::get('disableAlias') && $objArticle->alias != '') ? $objArticle->alias : $objArticle->id)));
+                    self::$arrUrlCache[$strCacheKey] = ampersand($objPid->getFrontendUrl('/articles/'.(!Config::get('disableAlias') && '' !== $objArticle->alias ? $objArticle->alias : $objArticle->id)));
                 }
                 break;
         }
 
         // Link to the default page
-        if (self::$arrUrlCache[$strCacheKey] === null) {
+        if (null === self::$arrUrlCache[$strCacheKey]) {
             $objPage = PageModel::findWithDetails($objItem->getRelated('pid')->jumpTo);
 
-            if ($objPage === null) {
+            if (null === $objPage) {
                 self::$arrUrlCache[$strCacheKey] = ampersand(Environment::get('request'), true);
             } else {
-                self::$arrUrlCache[$strCacheKey] = ampersand($objPage->getFrontendUrl(((Config::get('useAutoItem') && ! Config::get('disableAlias')) ? '/' : '/items/') . ((! Config::get('disableAlias') && $objItem->alias != '') ? $objItem->alias : $objItem->id)));
+                self::$arrUrlCache[$strCacheKey] = ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') && !Config::get('disableAlias') ? '/' : '/items/').(!Config::get('disableAlias') && '' !== $objItem->alias ? $objItem->alias : $objItem->id)));
             }
 
             // Add the current archive parameter (news archive)
-            if ($blnAddArchive && Input::get('month') != '') {
-                self::$arrUrlCache[$strCacheKey] .= (Config::get('disableAlias') ? '&amp;' : '?') . 'month=' . Input::get('month');
+            if ($blnAddArchive && '' !== Input::get('month')) {
+                self::$arrUrlCache[$strCacheKey] .= (Config::get('disableAlias') ? '&amp;' : '?').'month='.Input::get('month');
             }
         }
 

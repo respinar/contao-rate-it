@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
- * @author     Carsten Götzinger <info@cgo-it.de>
  * @copyright  2019 hofff.com.
  * @copyright  2013-2018 cgo IT.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -23,14 +24,14 @@ use Contao\System;
 use Hofff\Contao\RateIt\Rating\RatingService;
 
 /**
- * Class RateItHybrid
+ * Class RateItHybrid.
  */
 abstract class RateItHybrid extends RateItFrontend
 {
-    //protected $intStars = 5;
+    // protected $intStars = 5;
 
     /**
-     * Initialize the controller
+     * Initialize the controller.
      */
     public function __construct($objElement)
     {
@@ -40,7 +41,8 @@ abstract class RateItHybrid extends RateItFrontend
     }
 
     /**
-     * Display a wildcard in the back end
+     * Display a wildcard in the back end.
+     *
      * @return string
      */
     public function generate()
@@ -53,10 +55,10 @@ abstract class RateItHybrid extends RateItFrontend
             $objTemplate = new BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### Rate IT ###';
-            $objTemplate->title    = $this->rateit_title;
-            $objTemplate->id       = $this->id;
-            $objTemplate->link     = $this->name;
-            $objTemplate->href     = $this->generateBackendUrl();
+            $objTemplate->title = $this->rateit_title;
+            $objTemplate->id = $this->id;
+            $objTemplate->link = $this->name;
+            $objTemplate->href = $this->generateBackendUrl();
 
             return $objTemplate->parse();
         }
@@ -73,7 +75,7 @@ abstract class RateItHybrid extends RateItFrontend
         $container = System::getContainer();
         $router = $container->get('router');
 
-        if ($this->getType() === 'ce') {
+        if ('ce' === $this->getType()) {
             return $router->generate('contao_backend', [
                 'do' => 'article',
                 'table' => 'tl_content',
@@ -91,25 +93,26 @@ abstract class RateItHybrid extends RateItFrontend
     }
 
     /**
-     * Generate the module/content element
+     * Generate the module/content element.
      */
     protected function compile(): void
     {
         $rating = self::getContainer()
             ->get(RatingService::class)
-            ->getRating($this->getType(), (int) $this->getParent()->id, $this->getUserId());
+            ->getRating($this->getType(), (int) $this->getParent()->id, $this->getUserId())
+        ;
 
         $this->Template->setData(array_merge($this->Template->getData(), (array) $rating));
 
-        $this->Template->showBefore = $this->strTextPosition === "before";
-        $this->Template->showAfter  = $this->strTextPosition === "after";
+        $this->Template->showBefore = 'before' === $this->strTextPosition;
+        $this->Template->showAfter = 'after' === $this->strTextPosition;
 
         parent::compile();
     }
 
     abstract protected function getType(): string;
 
-    private function getUserId(): ?int
+    private function getUserId(): int|null
     {
         if ($this->User->id) {
             return (int) $this->User->id;

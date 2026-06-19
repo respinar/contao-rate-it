@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
- * @author     Carsten Götzinger <info@cgo-it.de>
  * @copyright  2019 hofff.com.
  * @copyright  2013-2018 cgo IT.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -23,41 +24,44 @@ use Contao\Model\Collection;
 use Contao\System;
 
 /**
- * Class RateItFrontend
+ * Class RateItFrontend.
  */
 class RateItFrontend extends Hybrid
 {
-
     /**
-     * Primary key
+     * Primary key.
+     *
      * @var string
      */
     protected $strPk = 'id';
 
     /**
-     * Template
+     * Template.
+     *
      * @var string
      */
     protected $strTemplate = 'rateit_default';
 
     /**
-     * Anzahl der Herzen/Sterne
+     * Anzahl der Herzen/Sterne.
+     *
      * @var int
      */
     protected $intStars = 5;
 
     /**
-     * Textposition
+     * Textposition.
+     *
      * @var string
      */
     protected $strTextPosition = 'after';
 
     /**
-     * Initialize the controller
+     * Initialize the controller.
      */
-    public function __construct($objElement = array())
+    public function __construct($objElement = [])
     {
-        if (! empty($objElement)) {
+        if (!empty($objElement)) {
             if ($objElement instanceof Model) {
                 $this->strTable = $objElement->getTable();
             } elseif ($objElement instanceof Collection) {
@@ -76,7 +80,8 @@ class RateItFrontend extends Hybrid
     }
 
     /**
-     * Display a wildcard in the back end
+     * Display a wildcard in the back end.
+     *
      * @return string
      */
     public function generate()
@@ -84,33 +89,36 @@ class RateItFrontend extends Hybrid
         return parent::generate();
     }
 
-
     /**
-     * Generate the module/content element
+     * Generate the module/content element.
      */
-    protected function compile(): void {}
+    protected function compile(): void
+    {
+    }
 
-    public function getStarMessage(array $rating): string|array|null
+    public function getStarMessage(array $rating): array|string|null
     {
         $configAdapter = System::getContainer()->get('contao.framework')->getAdapter(Config::class);
 
         $this->loadLanguageFile('default');
         $stars = $this->percentToStars($rating['rating']);
         preg_match('/^.*\[(.+)\|(.+)\].*$/i', $configAdapter->get('rating_description'), $labels);
-        if (! is_array($labels) && (! count($labels) == 2 || ! count($labels) == 3)) {
-            $label       = ($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating ? $GLOBALS['TL_LANG']['rateit']['rating_label'][1] : $GLOBALS['TL_LANG']['rateit']['rating_label'][0];
-            $description = '%current%/%max% %type% (%count% [' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][0] . '|' . $GLOBALS['TL_LANG']['tl_rateit']['vote'][1] . '])';
+        if (!\is_array($labels) && (2 === !\count($labels) || 3 === !\count($labels))) {
+            $label = ($rating['totalRatings'] > 1 || 0 === $rating['totalRatings']) || !$rating ? $GLOBALS['TL_LANG']['rateit']['rating_label'][1] : $GLOBALS['TL_LANG']['rateit']['rating_label'][0];
+            $description = '%current%/%max% %type% (%count% ['.$GLOBALS['TL_LANG']['tl_rateit']['vote'][0].'|'.$GLOBALS['TL_LANG']['tl_rateit']['vote'][1].'])';
         } else {
-            $label       = count($labels) === 2 ? $labels[1] : ((($rating['totalRatings'] > 1 || $rating['totalRatings'] == 0) || ! $rating) ? $labels[2] : $labels[1]);
+            $label = 2 === \count($labels) ? $labels[1] : (($rating['totalRatings'] > 1 || 0 === $rating['totalRatings']) || !$rating ? $labels[2] : $labels[1]);
             $description = $configAdapter->get('rating_description');
         }
-        $actValue = $rating === false ? 0 : $rating['totalRatings'];
-        $type     = $GLOBALS['TL_LANG']['rateit']['stars'];
-// 		return str_replace('.', ',', $stars)."/$this->intStars ".$type." ($actValue $label)";
+        $actValue = false === $rating ? 0 : $rating['totalRatings'];
+        $type = $GLOBALS['TL_LANG']['rateit']['stars'];
+        // 		return str_replace('.', ',', $stars)."/$this->intStars ".$type."
+        // ($actValue $label)";
         $description = str_replace('%current%', str_replace('.', ',', $stars), $description);
         $description = str_replace('%max%', $this->intStars, $description);
         $description = str_replace('%type%', $type, $description);
         $description = str_replace('%count%', $actValue, $description);
+
         return preg_replace('/^(.*)(\[.*\])(.*)$/i', "\\1$label\\3", $description);
     }
 
@@ -127,12 +135,14 @@ class RateItFrontend extends Hybrid
         GROUP BY i.rkey, i.title";
 
         return System::getContainer()->get('database_connection')
-            ->fetchAssociative($sql, [$rkey, $typ]);
+            ->fetchAssociative($sql, [$rkey, $typ])
+        ;
     }
 
     protected function percentToStars($percent): float
     {
         $modifier = 100 / $this->intStars;
+
         return round($percent / $modifier, 1);
     }
 }

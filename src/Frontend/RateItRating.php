@@ -1,29 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
- * @author     Carsten Götzinger <info@cgo-it.de>
  * @copyright  2019 hofff.com.
  * @copyright  2013-2018 cgo IT.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
 namespace Hofff\Contao\RateIt\Frontend;
 
 use Contao\FrontendTemplate;
-use Hofff\Contao\RateIt\Frontend\RateItFrontend;
 
 class RateItRating extends RateItFrontend
 {
-
     /**
-     * RatingKey
+     * RatingKey.
+     *
      * @var int
      */
     public $rkey = 0;
@@ -31,7 +31,7 @@ class RateItRating extends RateItFrontend
     public $ratingType = 'page';
 
     /**
-     * Display a wildcard in the back end
+     * Display a wildcard in the back end.
      */
     public function generate(): void
     {
@@ -39,7 +39,7 @@ class RateItRating extends RateItFrontend
     }
 
     /**
-     * Compile
+     * Compile.
      */
     protected function compile(): void
     {
@@ -48,23 +48,23 @@ class RateItRating extends RateItFrontend
         $this->Template = new FrontendTemplate($this->strTemplate);
         $this->Template->setData($this->arrData);
 
-        $rating   = $this->loadRating($this->rkey, $this->ratingType);
+        $rating = $this->loadRating($this->rkey, $this->ratingType);
         $ratingId = $this->rkey;
-        $stars    = ! $rating ? 0 : $this->percentToStars($rating['rating']);
-        $percent  = round($rating['rating'], 0) . "%";
+        $stars = !$rating ? 0 : $this->percentToStars($rating['rating']);
+        $percent = round($rating['rating'], 0).'%';
 
-        $this->Template->descriptionId = 'rateItRating-' . $ratingId . '-description';
-        $this->Template->description   = $this->getStarMessage($rating);
-        $this->Template->id            = 'rateItRating-' . $ratingId . '-' . $this->ratingType . '-' . $stars . '_' . $this->intStars;
-        $this->Template->class         = 'rateItRating';
-        $this->Template->itemreviewed  = $rating['title'];
-        $this->Template->actRating     = $this->percentToStars($rating['rating']);
-        $this->Template->maxRating     = $this->intStars;
-        $this->Template->votes         = $rating['totalRatings'];
+        $this->Template->descriptionId = 'rateItRating-'.$ratingId.'-description';
+        $this->Template->description = $this->getStarMessage($rating);
+        $this->Template->id = 'rateItRating-'.$ratingId.'-'.$this->ratingType.'-'.$stars.'_'.$this->intStars;
+        $this->Template->class = 'rateItRating';
+        $this->Template->itemreviewed = $rating['title'];
+        $this->Template->actRating = $this->percentToStars($rating['rating']);
+        $this->Template->maxRating = $this->intStars;
+        $this->Template->votes = $rating['totalRatings'];
 
-        if ($this->strTextPosition == "before") {
+        if ('before' === $this->strTextPosition) {
             $this->Template->showBefore = true;
-        } else if ($this->strTextPosition == "after") {
+        } elseif ('after' === $this->strTextPosition) {
             $this->Template->showAfter = true;
         }
 
