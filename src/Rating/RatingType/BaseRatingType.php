@@ -3,12 +3,12 @@
 /**
  * This file is part of hofff/contao-rate-it.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * @author     David Molineus <david@hofff.com>
  * @copyright  2019-2020 hofff.com.
  * @license    https://github.com/hofff/contao-rate-it/blob/master/LICENSE LGPL-3.0-or-later
+ *
  * @filesource
  */
 
@@ -19,7 +19,6 @@ namespace Hofff\Contao\RateIt\Rating\RatingType;
 use Doctrine\DBAL\Connection;
 use Hofff\Contao\RateIt\Rating\RatingType;
 use Hofff\Contao\RateIt\Rating\SourceInformation;
-use PDO;
 
 abstract class BaseRatingType implements RatingType
 {
@@ -30,21 +29,21 @@ abstract class BaseRatingType implements RatingType
         $this->connection = $connection;
     }
 
-    public function sourceInformation(int $sourceId) : ?SourceInformation
+    public function sourceInformation(int $sourceId): SourceInformation|null
     {
         $record = $this->loadRecord($sourceId);
-        if ($record === null) {
+        if (null === $record) {
             return null;
         }
 
         return new SourceInformation(
             $this->generateTitle($record),
             $this->determineActiveState($record),
-            $this->determineParentStatus($record)
+            $this->determineParentStatus($record),
         );
     }
 
-    protected function determineParentStatus(array  $record) : string
+    protected function determineParentStatus(array $record): string
     {
         $published = $this->determineParentPublishedState($record);
 
@@ -61,7 +60,7 @@ abstract class BaseRatingType implements RatingType
         }
     }
 
-    protected function loadRecord(int $sourceId): ?array
+    protected function loadRecord(int $sourceId): array|null
     {
         $record = $this->connection->createQueryBuilder()
             ->select('*')
@@ -70,16 +69,17 @@ abstract class BaseRatingType implements RatingType
             ->setParameter('id', $sourceId)
             ->setMaxResults(1)
             ->executeQuery()
-            ->fetchAssociative();
+            ->fetchAssociative()
+        ;
 
         return $record ?: null;
     }
 
-    abstract protected function tableName() : string;
+    abstract protected function tableName(): string;
 
-    abstract protected function generateTitle(array $record) : string;
+    abstract protected function generateTitle(array $record): string;
 
-    abstract protected function determineActiveState(array $record) : bool;
+    abstract protected function determineActiveState(array $record): bool;
 
-    abstract protected function determineParentPublishedState(array $record) : bool;
+    abstract protected function determineParentPublishedState(array $record): bool;
 }
