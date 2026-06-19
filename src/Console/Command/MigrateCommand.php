@@ -47,9 +47,9 @@ final class MigrateCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('task', InputArgument::OPTIONAL, 'Decide which migration task should be run', 'article-to-page',);
+        $this->addArgument('task', InputArgument::OPTIONAL, 'Decide which migration task should be run', 'article-to-page');
 
-        $this->addOption('position', 'p', InputOption::VALUE_REQUIRED, 'Position of the rating being added to a page', 'before',);
+        $this->addOption('position', 'p', InputOption::VALUE_REQUIRED, 'Position of the rating being added to a page', 'before');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -105,9 +105,9 @@ final class MigrateCommand extends Command
 
         $arrSet = [
             'rkey' => $pageId,
-            'tstamp' => \time(),
+            'tstamp' => time(),
             'typ' => 'page',
-            'createdat' => \time(),
+            'createdat' => time(),
             'title' => $sourceInformation->title(),
             'active' => '1',
             'parentstatus' => $sourceInformation->parentStatus(),

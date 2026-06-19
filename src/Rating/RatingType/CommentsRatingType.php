@@ -28,7 +28,7 @@ final class CommentsRatingType extends BaseRatingType
 
     private CommentsTitleGenerator $titleGenerator;
 
-    public function __construct(Connection $connection, CommentsConfigurationLoader $configurationLoader, CommentsTitleGenerator $titleGenerator,)
+    public function __construct(Connection $connection, CommentsConfigurationLoader $configurationLoader, CommentsTitleGenerator $titleGenerator)
     {
         parent::__construct($connection);
 

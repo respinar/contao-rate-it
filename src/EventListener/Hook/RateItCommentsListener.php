@@ -33,7 +33,7 @@ final class RateItCommentsListener extends RatingListener
 
     private CommentsConfigurationLoader $configurationLoader;
 
-    public function __construct(RatingService $ratingService, TokenStorageInterface $tokenStorage, ContaoFramework $framework, CommentsConfigurationLoader $configurationLoader, CommentsTitleGenerator $titleGenerator, Connection $connection,)
+    public function __construct(RatingService $ratingService, TokenStorageInterface $tokenStorage, ContaoFramework $framework, CommentsConfigurationLoader $configurationLoader, CommentsTitleGenerator $titleGenerator, Connection $connection)
     {
         parent::__construct($ratingService, $tokenStorage, $framework);
 
@@ -48,7 +48,7 @@ final class RateItCommentsListener extends RatingListener
 
     public function onParseTemplate(Template $template): void
     {
-        if (0 !== \strncmp($template->getName(), 'com_', 4)) {
+        if (0 !== strncmp($template->getName(), 'com_', 4)) {
             return;
         }
 
@@ -64,7 +64,7 @@ final class RateItCommentsListener extends RatingListener
 
     private function getCommentRating(Template $template): array|null
     {
-        $commentId = (int) \substr($template->id, 1);
+        $commentId = (int) substr($template->id, 1);
         $rating = $this->getRating('comments', $commentId);
         if (null !== $rating) {
             return $rating;
@@ -72,9 +72,9 @@ final class RateItCommentsListener extends RatingListener
 
         $this->connection->insert('tl_rateit_items', [
             'rkey' => $commentId,
-            'tstamp' => \time(),
+            'tstamp' => time(),
             'typ' => 'comments',
-            'createdat' => \time(),
+            'createdat' => time(),
             'title' => $this->titleGenerator->generate(
                 $template->name,
                 $template->source,

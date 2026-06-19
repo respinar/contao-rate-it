@@ -33,7 +33,7 @@ final class RatingTypes
      */
     public function __construct(array $activeTypesNames, iterable $ratingTypes = [])
     {
-        $this->activeTypesNames = \array_flip($activeTypesNames);
+        $this->activeTypesNames = array_flip($activeTypesNames);
 
         foreach ($ratingTypes as $ratingType) {
             $this->register($ratingType);
@@ -68,6 +68,6 @@ final class RatingTypes
      */
     public function activeTypeNames(): array
     {
-        return \array_keys($this->ratingTypes);
+        return array_keys($this->ratingTypes);
     }
 }

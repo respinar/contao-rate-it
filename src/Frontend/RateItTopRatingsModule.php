@@ -213,8 +213,8 @@ class RateItTopRatingsModule extends RateItFrontend
             case 'article':
                 if (
                     ($objArticle = ArticleModel::findById($objItem->articleId, [
-                    'eager' => true,
-                ])) !== null && ($objPid = $objArticle->getRelated('pid')) !== null
+                        'eager' => true,
+                    ])) !== null && ($objPid = $objArticle->getRelated('pid')) !== null
                 ) {
                     /** @var \PageModel $objPid */
                     self::$arrUrlCache[$strCacheKey] = ampersand($objPid->getFrontendUrl('/articles/'.(!Config::get('disableAlias') && '' !== $objArticle->alias ? $objArticle->alias : $objArticle->id)));

@@ -159,6 +159,7 @@ abstract class BaseDcaListener
         Database::getInstance()
             ->prepare('UPDATE tl_rateit_items %s WHERE rkey=? and typ=?')
             ->set(['parentstatus' => $information->parentStatus()])
-            ->execute((string) $statusId, static::$typeName);
+            ->execute((string) $statusId, static::$typeName)
+        ;
     }
 }

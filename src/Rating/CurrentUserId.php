@@ -32,7 +32,7 @@ final class CurrentUserId
             return;
         }
 
-        $this->value = \uniqid('', true);
+        $this->value = uniqid('', true);
         setcookie('hofff_rate_it', $this->value, time() + 31536000);
     }
 

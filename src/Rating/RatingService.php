@@ -54,7 +54,7 @@ final class RatingService
      */
     private $isUserAllowedToRate;
 
-    public function __construct(Connection $connection, ContaoFramework $framework, IsUserAllowedToRate $isUserAllowedToRate,)
+    public function __construct(Connection $connection, ContaoFramework $framework, IsUserAllowedToRate $isUserAllowedToRate)
     {
         $this->connection = $connection;
         $this->framework = $framework;

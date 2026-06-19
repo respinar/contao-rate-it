@@ -43,7 +43,7 @@ final class CommentsConfigurationLoader
         $this->framework->initialize();
 
         $modelClass = Model::getClassFromTable($source);
-        if (!\class_exists($modelClass)) {
+        if (!class_exists($modelClass)) {
             return null;
         }
 
