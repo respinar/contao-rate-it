@@ -649,7 +649,9 @@ class RateItBackendModule extends BackendModule
                     ->execute($rating['memberid'])
                     ->fetchAssoc()
                 ;
-                $rating['member'] = $member['firstname'].' '.$member['lastname'];
+                $rating['member'] = trim(($member['firstname'] ?? '').' '.($member['lastname'] ?? ''));
+            } else {
+                $rating['member'] = '';
             }
             $arrReturn[] = (object) $rating;
         }
