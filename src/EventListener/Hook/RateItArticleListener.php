@@ -26,8 +26,7 @@ class RateItArticleListener extends RatingListener
     public function onParseTemplate(Template $template): void
     {
         // TODO: Check if other template names are required, maybe        if
-        // (strpos($objTemplate->getName(), 'mod_article') !== 0) {            return;   
-        //  }
+        // (strpos($objTemplate->getName(), 'mod_article') !== 0) {            return;  }
 
         if ('article' === $template->type) {
             $this->doArticle($template);
