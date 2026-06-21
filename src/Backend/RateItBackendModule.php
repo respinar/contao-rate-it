@@ -20,6 +20,7 @@ namespace Hofff\Contao\RateIt\Backend;
 use Contao\BackendModule;
 use Contao\BackendUser;
 use Contao\Config;
+use Contao\Database;
 use Contao\Input;
 use Contao\System;
 use Hofff\Contao\RateIt\Rating\RatingTypes;
@@ -395,24 +396,24 @@ class RateItBackendModule extends BackendModule
 
         foreach ($ids0 as $id) {
             [$rkey, $typ] = explode('__', $id);
-            $this->Database->beginTransaction();
+            Database::getInstance()->beginTransaction();
 
-            $pid = $this->Database->prepare('SELECT id FROM tl_rateit_items WHERE rkey=? and typ=?')
+            $pid = Database::getInstance()->prepare('SELECT id FROM tl_rateit_items WHERE rkey=? and typ=?')
                 ->execute($rkey, $typ)
                 ->fetchRow()
             ;
 
-            $this->Database->prepare('DELETE FROM tl_rateit_ratings WHERE pid=?')
+            Database::getInstance()->prepare('DELETE FROM tl_rateit_ratings WHERE pid=?')
                 ->execute($pid[0])
             ;
 
             if ($removeParent) {
-                $this->Database->prepare('DELETE FROM tl_rateit_items WHERE id=?')
+                Database::getInstance()->prepare('DELETE FROM tl_rateit_items WHERE id=?')
                     ->execute($pid[0])
                 ;
             }
 
-            $this->Database->commitTransaction();
+            Database::getInstance()->commitTransaction();
         }
 
         $this->redirect($rateit->homeLink);
@@ -431,12 +432,12 @@ class RateItBackendModule extends BackendModule
         }
 
         $pageTypes = self::getContainer()->get(RatingTypes::class);
-        $result = $this->Database->execute('SELECT id, rkey, typ FROM tl_rateit_items');
+        $result = Database::getInstance()->execute('SELECT id, rkey, typ FROM tl_rateit_items');
 
         while ($result->next()) {
             $information = $pageTypes->sourceInformation($result->typ, (int) $result->rkey);
             if (null === $information) {
-                $this->Database
+                Database::getInstance()
                     ->prepare('UPDATE tl_rateit_items %s WHERE id=?')
                     ->set(['parentstatus' => 'r'])
                     ->execute($result->id)
@@ -445,7 +446,7 @@ class RateItBackendModule extends BackendModule
                 continue;
             }
 
-            $this->Database
+            Database::getInstance()
                 ->prepare('UPDATE tl_rateit_items %s WHERE id=?')
                 ->set(['parentstatus' => $information->parentStatus(), 'title' => $information->title()])
                 ->execute($result->id)
@@ -580,9 +581,9 @@ class RateItBackendModule extends BackendModule
 
         $cntSql = str_replace('%s', $where, $cntSql);
 
-        $count = $this->Database->query($cntSql)->fetchRow();
+        $count = Database::getInstance()->query($cntSql)->fetchRow();
 
-        $arrRatingItems = $this->Database->query($sql)->fetchAllAssoc();
+        $arrRatingItems = Database::getInstance()->query($sql)->fetchAllAssoc();
         $arrReturn = [];
 
         foreach ($arrRatingItems as $rating) {
@@ -607,7 +608,7 @@ class RateItBackendModule extends BackendModule
     {
         // Gesamtanzahl (für Paging wichtig) ermitteln
         $cntSql = "SELECT COUNT(*) FROM tl_rateit_ratings r WHERE r.pid=$ext->item_id";
-        $count = $this->Database->prepare($cntSql)
+        $count = Database::getInstance()->prepare($cntSql)
             ->execute()
             ->fetchRow()
         ;
@@ -631,7 +632,7 @@ class RateItBackendModule extends BackendModule
 		%l";
         $sql = str_replace('%l', $limit, $sql);
 
-        $arrRatings = $this->Database->prepare($sql)
+        $arrRatings = Database::getInstance()->prepare($sql)
             ->execute()
             ->fetchAllAssoc()
         ;
@@ -643,7 +644,7 @@ class RateItBackendModule extends BackendModule
             $rating['stars'] = $this->intStars;
             $rating['totcount'] = $count[0];
             if (null !== $rating['memberid']) {
-                $member = $this->Database->prepare('SELECT firstname, lastname FROM tl_member WHERE id=?')
+                $member = Database::getInstance()->prepare('SELECT firstname, lastname FROM tl_member WHERE id=?')
                     ->limit(1)
                     ->execute($rating['memberid'])
                     ->fetchAssoc()
@@ -668,7 +669,7 @@ class RateItBackendModule extends BackendModule
 		GROUP BY rating
 		ORDER BY rating";
 
-        $arrRatingStatistics = $this->Database->prepare($sql)
+        $arrRatingStatistics = Database::getInstance()->prepare($sql)
             ->execute()
             ->fetchAllAssoc()
         ;
@@ -710,7 +711,7 @@ class RateItBackendModule extends BackendModule
 		ORDER BY jahr DESC , monat DESC
 		LIMIT 0 , 12";
 
-        $arrResult = $this->Database->prepare($sql)
+        $arrResult = Database::getInstance()->prepare($sql)
             ->execute()
             ->fetchAllAssoc()
         ;
@@ -776,6 +777,6 @@ class RateItBackendModule extends BackendModule
 
     private function getUsedTypes(): array
     {
-        return $this->Database->execute('SELECT typ FROM tl_rateit_items GROUP BY typ ORDER BY typ')->fetchEach('typ');
+        return Database::getInstance()->execute('SELECT typ FROM tl_rateit_items GROUP BY typ ORDER BY typ')->fetchEach('typ');
     }
 } // class rateitBackendModule
