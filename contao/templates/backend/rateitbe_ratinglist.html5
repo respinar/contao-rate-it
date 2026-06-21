@@ -50,7 +50,7 @@ $order_options = &$GLOBALS['TL_LANG']['tl_rateit_order_options'];
 
 <div class="tl_filter tl_subpanel">
 <strong><?php echo $GLOBALS['TL_LANG']['MSC']['filter']; ?>:</strong> 
-<select name="rateit_typ" id="rateit_typ" class="tl_select<?php if ($rateit->f_type!='') echo ' active'; ?>">
+<select name="rateit_typ" id="rateit_typ" class="tl_select<?php if ($rateit->f_typ!='') echo ' active'; ?>">
   <option value=""><?php echo $text['seltyp'][0]; ?></option>
   <option value="">---</option>
 <?php foreach ($this->types as $k): ?>
