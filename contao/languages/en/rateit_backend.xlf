@@ -6,6 +6,18 @@
         <source>Back</source>
         <target>Back</target>
       </trans-unit>
+      <trans-unit id="tl_rateit.apply">
+        <source>Apply</source>
+        <target>Apply</target>
+      </trans-unit>
+      <trans-unit id="tl_rateit.rateit.0">
+        <source>Rating</source>
+        <target>Rating</target>
+      </trans-unit>
+      <trans-unit id="tl_rateit.rateit.1">
+        <source>current rating</source>
+        <target>current rating</target>
+      </trans-unit>
       <trans-unit id="tl_rateit.noratingsfound">
         <source>No matching ratings found.</source>
         <target>No matching ratings found.</target>

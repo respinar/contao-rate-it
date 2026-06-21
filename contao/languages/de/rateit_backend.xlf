@@ -6,6 +6,18 @@
         <source>Back</source>
         <target>Zurück</target>
       </trans-unit>
+      <trans-unit id="tl_rateit.apply">
+        <source>Apply</source>
+        <target>Übernehmen</target>
+      </trans-unit>
+      <trans-unit id="tl_rateit.rateit.0">
+        <source>Rating</source>
+        <target>Bewertung</target>
+      </trans-unit>
+      <trans-unit id="tl_rateit.rateit.1">
+        <source>current rating</source>
+        <target>aktuelle Bewertung</target>
+      </trans-unit>
       <trans-unit id="tl_rateit.noratingsfound">
         <source>No matching ratings found.</source>
         <target>Keine entsprechenden Bewertungen gefunden.</target>

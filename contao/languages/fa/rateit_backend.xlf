@@ -6,6 +6,18 @@
         <source>Back</source>
         <target>بازگشت</target>
       </trans-unit>
+      <trans-unit id="tl_rateit.apply">
+        <source>Apply</source>
+        <target>اعمال</target>
+      </trans-unit>
+      <trans-unit id="tl_rateit.rateit.0">
+        <source>Rating</source>
+        <target>امتیاز</target>
+      </trans-unit>
+      <trans-unit id="tl_rateit.rateit.1">
+        <source>current rating</source>
+        <target>امتیاز فعلی</target>
+      </trans-unit>
       <trans-unit id="tl_rateit.noratingsfound">
         <source>No matching ratings found.</source>
         <target>هیچ امتیاز منطبقی یافت نشد.</target>
