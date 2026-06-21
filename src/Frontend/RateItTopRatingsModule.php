@@ -20,7 +20,6 @@ namespace Hofff\Contao\RateIt\Frontend;
 use Contao\ArticleModel;
 use Contao\BackendTemplate;
 use Contao\Config;
-use Contao\Environment;
 use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\NewsModel;
@@ -227,7 +226,8 @@ class RateItTopRatingsModule extends RateItFrontend
             $objPage = PageModel::findWithDetails($objItem->getRelated('pid')->jumpTo);
 
             if (null === $objPage) {
-                self::$arrUrlCache[$strCacheKey] = ampersand(Environment::get('request'), true);
+                $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+                self::$arrUrlCache[$strCacheKey] = ampersand($request?->getRequestUri() ?? '', true);
             } else {
                 self::$arrUrlCache[$strCacheKey] = ampersand($objPage->getFrontendUrl((Config::get('useAutoItem') && !Config::get('disableAlias') ? '/' : '/items/').(!Config::get('disableAlias') && '' !== $objItem->alias ? $objItem->alias : $objItem->id)));
             }
