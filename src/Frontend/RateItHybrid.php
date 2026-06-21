@@ -33,11 +33,12 @@ abstract class RateItHybrid extends RateItFrontend
     /**
      * Initialize the controller.
      */
+    /**
+     * Initialize the controller.
+     */
     public function __construct($objElement)
     {
         parent::__construct($objElement);
-
-        $this->import(FrontendUser::class, 'User');
     }
 
     /**
@@ -114,8 +115,10 @@ abstract class RateItHybrid extends RateItFrontend
 
     private function getUserId(): int|null
     {
-        if ($this->User->id) {
-            return (int) $this->User->id;
+        $user = FrontendUser::getInstance();
+
+        if ($user->id) {
+            return (int) $user->id;
         }
 
         return null;
