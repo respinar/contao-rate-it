@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace Hofff\Contao\RateIt\Backend;
 
 use Contao\BackendModule;
+use Contao\BackendUser;
 use Contao\Config;
 use Contao\Input;
 use Contao\System;
@@ -91,8 +92,9 @@ class RateItBackendModule extends BackendModule
     {
         $this->rateit = new \stdClass();
         $rateit = &$this->rateit;
-        $rateit->username = $this->BackendUser->username;
-        $rateit->isadmin = $this->BackendUser->isAdmin;
+        $backendUser = BackendUser::getInstance();
+        $rateit->username = $backendUser->username;
+        $rateit->isadmin = $backendUser->isAdmin;
 
         $this->strTemplate = $this->actions[0][1];
         $this->compiler = $this->actions[0][2];
@@ -134,7 +136,7 @@ class RateItBackendModule extends BackendModule
 
         // load other helpers
         $this->tl_root = System::getContainer()->getParameter('kernel.project_dir').'/';
-        $this->tl_files = str_replace('\\', '/', Config::get('uploadPath')).'/';
+        $this->tl_files = str_replace('\\', '/', System::getContainer()->getParameter('contao.upload_path')).'/';
         $this->Template->rateit = $this->rateit;
 
         // complete rateit initialization
@@ -157,19 +159,26 @@ class RateItBackendModule extends BackendModule
     {
         $rateit = &$this->Template->rateit;
         $rateit->f_page = 0;
+        $rateit->f_typ = '';
+        $rateit->f_active = '';
+        $rateit->f_parentstatus = '';
+        $rateit->f_order = '';
+        $rateit->f_find = '';
         $options = [];
         $types = [];
+
+        $session = System::getContainer()->get('request_stack')->getSession();
 
         // returning from submit?
         if ($this->filterPost('rateit_action') === $rateit->f_action) {
             // get url parameters
-            $rateit->f_typ = trim(Input::post('rateit_typ'));
-            $rateit->f_active = trim(Input::post('rateit_active'));
-            $rateit->f_parentstatus = trim(Input::post('rateit_parentstatus'));
-            $rateit->f_order = trim(Input::post('rateit_order'));
-            $rateit->f_page = trim(Input::post('rateit_page'));
-            $rateit->f_find = trim(Input::post('rateit_find'));
-            $this->Session->set('rateit_settings', [
+            $rateit->f_typ = trim(Input::post('rateit_typ') ?? '');
+            $rateit->f_active = trim(Input::post('rateit_active') ?? '');
+            $rateit->f_parentstatus = trim(Input::post('rateit_parentstatus') ?? '');
+            $rateit->f_order = trim(Input::post('rateit_order') ?? '');
+            $rateit->f_page = trim(Input::post('rateit_page') ?? '');
+            $rateit->f_find = trim(Input::post('rateit_find') ?? '');
+            $session->set('rateit_settings', [
                 'rateit_typ' => $rateit->f_typ,
                 'rateit_parentstatus' => $rateit->f_parentstatus,
                 'rateit_order' => $rateit->f_order,
@@ -177,14 +186,14 @@ class RateItBackendModule extends BackendModule
                 'rateit_find' => $rateit->f_find,
             ]);
         } else {
-            $stg = $this->Session ? $this->Session->get('rateit_settings') : null;
+            $stg = $session->get('rateit_settings');
             if (\is_array($stg)) {
-                $rateit->f_typ = trim($stg['rateit_typ']);
-                $rateit->f_active = trim($stg['rateit_active']);
-                $rateit->f_parentstatus = trim($stg['rateit_parentstatus']);
-                $rateit->f_order = trim($stg['rateit_order']);
-                $rateit->f_page = trim($stg['rateit_page']);
-                $rateit->f_find = trim($stg['rateit_find']);
+                $rateit->f_typ = trim($stg['rateit_typ'] ?? '');
+                $rateit->f_active = trim($stg['rateit_active'] ?? '');
+                $rateit->f_parentstatus = trim($stg['rateit_parentstatus'] ?? '');
+                $rateit->f_order = trim($stg['rateit_order'] ?? '');
+                $rateit->f_page = trim($stg['rateit_page'] ?? '');
+                $rateit->f_find = trim($stg['rateit_find'] ?? '');
             } // if
         } // if
 
@@ -271,17 +280,19 @@ class RateItBackendModule extends BackendModule
 
         $rateit->f_page = 0;
 
+        $session = System::getContainer()->get('request_stack')->getSession();
+
         // returning from submit?
         if ($this->filterPost('rateit_action') === $rateit->f_action) {
             // get url parameters
-            $rateit->f_page = trim(Input::post('rateit_details_page'));
-            $this->Session->set('rateit_settings', [
+            $rateit->f_page = trim(Input::post('rateit_details_page') ?? '');
+            $session->set('rateit_settings', [
                 'rateit_details_page' => $rateit->f_page,
             ]);
         } else {
-            $stg = $this->Session->get('rateit_settings');
+            $stg = $session->get('rateit_settings');
             if (\is_array($stg)) {
-                $rateit->f_page = trim($stg['rateit_details_page']);
+                $rateit->f_page = trim($stg['rateit_details_page'] ?? '');
             } // if
         } // if
 
@@ -484,7 +495,7 @@ class RateItBackendModule extends BackendModule
      */
     protected function filterPost($aKey, $aMode = ''): array|string|null
     {
-        $v = trim(Input::postRaw($aKey));
+        $v = trim(Input::postRaw($aKey) ?? '');
         if ('' === $v || '' === $aMode) {
             return $v;
         }
